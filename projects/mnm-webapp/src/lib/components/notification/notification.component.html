@@ -1,0 +1,58 @@
+<div class="notification"
+     #alert>
+  <button (click)="dismissAlert()" class="delete"></button>
+  {{alertMessage}}
+</div>
+
+<div class="modal" #modal>
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">{{modalTitle}}</p>
+      <button (click)="dismissModal()" class="delete"></button>
+    </header>
+
+    <!--MODAL-->
+    <ng-container *ngIf="type === 'modal'">
+      <section class="modal-card-body">
+        <p>{{modalMessage}}</p>
+      </section>
+      <footer class="modal-card-foot">
+        <button *ngFor="let button of modalButtons; let i = index" class="button" (click)="submitModal(i)">{{button}}
+        </button>
+      </footer>
+    </ng-container>
+
+    <!--PROMPT-->
+    <ng-container *ngIf="type === 'prompt'">
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">{{modalMessage}}</label>
+          <p class="control">
+            <input
+              (keyup)="submitPromptIfEnter($event)" class="input" type="text" placeholder="{{promptPlaceholder}}"
+              [(ngModel)]="promptText">
+          </p>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button (click)="submitPrompt()" class="button is-success">{{modalButtons[0]}}</button>
+        <button (click)="dismissModal()" class="button">{{modalButtons[1]}}</button>
+      </footer>
+    </ng-container>
+
+
+    <!--LIST-->
+    <ng-container *ngIf="type === 'list'">
+      <section class="modal-card-body">
+        <button style="margin-top: 4px" *ngFor="let button of modalButtons; let idx = index"
+                class="button is-primary is-fullwidth"
+                (click)="submitModal(idx)">{{button}}
+        </button>
+      </section>
+      <footer class="modal-card-foot">
+      </footer>
+    </ng-container>
+
+  </div>
+</div>

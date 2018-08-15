@@ -121,6 +121,46 @@
           }
         }
       }
+    },
+    "mnm-webapp": {
+      "root": "projects/mnm-webapp",
+      "sourceRoot": "projects/mnm-webapp/src",
+      "projectType": "library",
+      "prefix": "mnm",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/mnm-webapp/tsconfig.lib.json",
+            "project": "projects/mnm-webapp/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/mnm-webapp/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/mnm-webapp/src/test.ts",
+            "tsConfig": "projects/mnm-webapp/tsconfig.spec.json",
+            "karmaConfig": "projects/mnm-webapp/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/mnm-webapp/tsconfig.lib.json",
+              "projects/mnm-webapp/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "mnm-webapp-app"

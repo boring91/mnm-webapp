@@ -16,6 +16,14 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "mnm-webapp": [
+        "dist/mnm-webapp"
+      ],
+      "mnm-webapp/*": [
+        "dist/mnm-webapp/*"
+      ]
+    }
   }
 }

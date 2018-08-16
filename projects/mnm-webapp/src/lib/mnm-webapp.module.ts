@@ -14,21 +14,26 @@ import {UploadService} from './services/upload/upload.service';
 import {OauthService} from './services/oauth.service';
 import {MNMHttpService} from './services/http/mnm-http.service';
 import {BroadcasterService} from './services/broadcaster/broadcaster.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {OnCreateDirective} from './directives/on-create.directive';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   declarations: [
     NotificationComponent,
-    LoadingComponent
+    LoadingComponent,
+    OnCreateDirective
   ],
   exports: [
     NotificationComponent,
-    LoadingComponent
+    LoadingComponent,
+    OnCreateDirective
   ]
 })
 export class MnmWebappModule {

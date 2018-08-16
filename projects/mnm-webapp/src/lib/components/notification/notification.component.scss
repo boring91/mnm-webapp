@@ -1,0 +1,82 @@
+.mnm-alerts-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 5px;
+  overflow: visible;
+  max-height: 100vh;
+
+  .mnm-notification {
+    position: relative;
+    color: #fff;
+    width: 390px;
+    padding: 21px;
+    display: none;
+
+    &.is-active {
+      display: block;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 5px;
+    }
+
+    &.is-danger {
+      background: #f08182;
+    }
+
+    &.is-warning {
+      background: #a48d36;
+    }
+
+    &.is-info {
+      background: #61a1b9;
+    }
+
+    &.is-success {
+      background: #22af58;
+    }
+
+    .mnm-remove {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 3px;
+      background: none;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+  }
+}
+
+.mnm-modal {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+
+  .mnm-modal-card {
+    background: white;
+    width: 700px;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .mnm-modal-card-title {
+    margin: 0;
+  }
+}

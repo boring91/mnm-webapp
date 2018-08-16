@@ -1,91 +1,145 @@
 import {Component, NgZone, OnDestroy, Renderer, ViewChild} from '@angular/core';
 import {NotificationService} from './notification.service';
 import {NotificationType} from './notification-type';
+import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
+import {miscFunctions} from '../../misc/misc-functions';
+import {Alert} from './alert';
+import {Modal} from './modal';
 
 @Component({
   selector: 'mnm-notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss']
+  styleUrls: ['./notification.component.scss'],
+  animations: [
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', style({opacity: 0}), {optional: true}),
+
+        query(':enter', stagger('200ms', [
+          animate('200ms ease-in', keyframes([
+            style({opacity: 0.0, offset: 0.0}),
+            style({opacity: 0.7, offset: 0.7}),
+            style({opacity: 1.0, offset: 1.0})
+          ]))
+        ]), {optional: true}),
+
+        query(':leave', stagger('200ms', [
+          animate('200ms ease-in', keyframes([
+            style({opacity: 1.0, offset: 0.0}),
+            style({opacity: 0.5, offset: 0.3}),
+            style({opacity: 0.0, offset: 1.0})
+          ]))
+        ]), {optional: true})
+
+      ])
+    ])
+  ]
 })
 export class NotificationComponent implements OnDestroy {
 
   /**
    * For the alert
    */
-  @ViewChild('alert') alert;
-  alertMessage = '';
+    // @ViewChild('alert') alert;
+    // alertMessage = '';
+  alerts: Alert[] = [];
+
 
   /**
    * For the modal
    */
-  @ViewChild('modal') modal;
-  modalTitle = '';
-  modalMessage = '';
-  modalButtons = [];
-  modalCallback = null;
-  promptPlaceholder = '';
-  type = '';
-  promptText = '';
+    // @ViewChild('modal') modal;
+    // modalTitle = '';
+    // modalMessage = '';
+    // modalButtons = [];
+    // modalCallback = null;
+    // promptPlaceholder = '';
+    // type = '';
+    // promptText = '';
+  modals: Modal[] = [];
 
-  private _callback: (event: KeyboardEvent) => void;
+  private readonly _callback: (event: KeyboardEvent) => void;
 
   constructor(notificationService: NotificationService, private renderer: Renderer, private ngZone: NgZone) {
+    let alertClassName: string;
     notificationService.alerts$.subscribe(x => {
-      this.dismissAlert();
       switch (x.type) {
         case NotificationType.Success:
-          this.renderer.setElementClass(this.alert.nativeElement, 'is-success', true);
+          alertClassName = 'is-success';
           break;
         case NotificationType.Info:
-          this.renderer.setElementClass(this.alert.nativeElement, 'is-info', true);
+          alertClassName = 'is-info';
           break;
         case NotificationType.Warn:
-          this.renderer.setElementClass(this.alert.nativeElement, 'is-warning', true);
+          alertClassName = 'is-warning';
           break;
         case NotificationType.Error:
-          this.renderer.setElementClass(this.alert.nativeElement, 'is-danger', true);
+          alertClassName = 'is-danger';
           break;
       }
-      this.alertMessage = x.message;
-      renderer.setElementClass(this.alert.nativeElement, 'active', true);
-      setTimeout(() => {
-        this.dismissAlert();
-      }, 5000);
+      // this.alertMessage = x.message;
+      // renderer.setElementClass(this.alert.nativeElement, 'is-active', true);
+      // setTimeout(() => {
+      //   this.dismissAlert();
+      // }, 5000);
+      const alert = {
+        id: miscFunctions.uuid(),
+        text: x.message,
+        className: alertClassName
+      };
+      this.alerts.push(alert);
+      this.setAlertTimer(alert);
     });
 
     notificationService.modals$.subscribe(x => {
-      this.modalButtons = [];
-      this.modalTitle = x.title;
-      this.modalMessage = x.message;
-      this.modalCallback = x.callback;
-      this.promptPlaceholder = x.placeholder;
+      // this.modalButtons = [];
+      // this.modalTitle = x.title;
+      // this.modalMessage = x.message;
+      // this.modalCallback = x.callback;
+      // this.promptPlaceholder = x.placeholder;
+
+      const modal: Modal = {
+        id: miscFunctions.uuid(),
+        title: x.title,
+        message: x.message,
+        callback: x.callback,
+      };
 
       switch (x.type) {
         case NotificationType.Modal:
-          this.type = 'modal';
-          this.modalButtons = x.buttons;
+          modal.type = 'modal';
+          modal.buttons = x.buttons;
+          // this.type = 'modal';
+          // this.modalButtons = x.buttons;
           break;
         case NotificationType.Prompt:
-          this.type = 'prompt';
-          this.promptPlaceholder = x.placeholder;
-          this.promptText = x.defaultText;
-          this.modalButtons.push(x.positive);
-          this.modalButtons.push(x.negative);
+          // this.type = 'prompt';
+          // this.promptPlaceholder = x.placeholder;
+          // this.promptText = x.defaultText;
+          // this.modalButtons.push(x.positive);
+          // this.modalButtons.push(x.negative);
+          modal.type = 'prompt';
+          modal.promptPlaceholder = x.placeholder;
+          modal.promptText = x.defaultText;
+          modal.buttons = [x.positive, x.negative];
           break;
         case NotificationType.List:
-          this.type = 'list';
-          this.modalButtons = x.buttons;
+          // this.type = 'list';
+          // this.modalButtons = x.buttons;
+          modal.type = 'list';
+          modal.buttons = x.buttons;
           break;
       }
 
-      this.ngZone.runOutsideAngular(() => {
-        this.renderer.setElementClass(this.modal.nativeElement, 'is-active', true);
-      });
+      // this.ngZone.runOutsideAngular(() => {
+      //   this.renderer.setElementClass(this.modal.nativeElement, 'is-active', true);
+      // });
+      this.modals.push(modal);
     });
 
     this._callback = (event: KeyboardEvent) => {
       if (event.keyCode === 27) {
-        this.dismissModal();
+        this.modals.pop();
       }
     };
     document.addEventListener('keyup', this._callback);
@@ -95,36 +149,43 @@ export class NotificationComponent implements OnDestroy {
     document.removeEventListener('keyup', this._callback);
   }
 
-  dismissAlert() {
-    this.ngZone.runOutsideAngular(() => {
-      this.renderer.setElementClass(this.alert.nativeElement, 'is-success', false);
-      this.renderer.setElementClass(this.alert.nativeElement, 'is-info', false);
-      this.renderer.setElementClass(this.alert.nativeElement, 'is-warning', false);
-      this.renderer.setElementClass(this.alert.nativeElement, 'is-danger', false);
-      this.renderer.setElementClass(this.alert.nativeElement, 'active', false);
-    });
+  dismissAlert(alertId: string) {
+    // this.ngZone.runOutsideAngular(() => {
+    //   this.renderer.setElementClass(this.alert.nativeElement, 'is-success', false);
+    //   this.renderer.setElementClass(this.alert.nativeElement, 'is-info', false);
+    //   this.renderer.setElementClass(this.alert.nativeElement, 'is-warning', false);
+    //   this.renderer.setElementClass(this.alert.nativeElement, 'is-danger', false);
+    //   this.renderer.setElementClass(this.alert.nativeElement, 'is-active', false);
+    // });
+    this.alerts = this.alerts.filter(a => a.id !== alertId);
   }
 
-  submitModal(which) {
-    this.modalCallback(which);
-    this.dismissModal();
+  setAlertTimer(alert: Alert) {
+    alert.timerId = setTimeout(() => this.dismissAlert(alert.id), 3000);
   }
 
-  submitPromptIfEnter(event: KeyboardEvent) {
+  removeAlertTimer(alert: Alert) {
+    clearTimeout(alert.timerId);
+  }
+
+
+  submitModal(modal: Modal, which) {
+    modal.callback(which);
+    this.dismissModal(modal);
+  }
+
+  submitPromptIfEnter(modal: Modal, event: KeyboardEvent) {
     if (event.keyCode === 13) {
-      this.submitPrompt();
+      this.submitPrompt(modal);
     }
   }
 
-  submitPrompt() {
-    this.modalCallback(this.promptText);
-    this.promptText = '';
-    this.dismissModal();
+  submitPrompt(modal: Modal) {
+    modal.callback(modal.promptText);
+    this.dismissModal(modal);
   }
 
-  dismissModal() {
-    this.ngZone.runOutsideAngular(() => {
-      this.renderer.setElementClass(this.modal.nativeElement, 'is-active', false);
-    });
+  dismissModal(modal: Modal) {
+    this.modals = this.modals.filter(m => m.id !== modal.id);
   }
 }

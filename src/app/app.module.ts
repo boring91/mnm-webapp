@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {MnmWebappModule} from 'mnm-webapp';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import {MnmWebappModule} from 'mnm-webapp';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     MnmWebappModule.forRoot()
   ],
   providers: [],

@@ -8,56 +8,60 @@
   </div>
 </div>
 
-<div *ngFor="let modal of modals" class="mnm-modal">
-  <div class="mnm-modal-card">
-    <header class="mnm-modal-card-head">
-      <p class="mnm-modal-card-title">{{modal.title}}</p>
-      <button (click)="dismissModal(modal)" class="mnm-remove"></button>
-    </header>
+<div [@modalAnimation]="modals.length">
+  <div *ngFor="let modal of modals" class="mnm-modal">
+    <div class="mnm-overlay" (click)="dismissModal(modal)"></div>
+    <div class="mnm-card">
+      <header class="mnm-head">
+        <p class="mnm-title">{{modal.title}}</p>
+        <button (click)="dismissModal(modal)" class="mnm-remove"></button>
+      </header>
 
-    <!--MODAL-->
-    <ng-container *ngIf="modal.type === 'modal'">
-      <section class="mnm-modal-card-body">
-        <p>{{modal.message}}</p>
-      </section>
-      <footer class="mnm-modal-card-foot">
-        <button *ngFor="let button of modal.buttons; let i = index" class="mnm-button" (click)="submitModal(modal, i)">
-          {{button}}
-        </button>
-      </footer>
-    </ng-container>
+      <!--MODAL-->
+      <ng-container *ngIf="modal.type === 'modal'">
+        <section class="mnm-body">
+          <p>{{modal.message}}</p>
+        </section>
+        <footer class="mnm-foot">
+          <button *ngFor="let button of modal.buttons; let i = index" class="mnm-button"
+                  (click)="submitModal(modal, i)">
+            {{button}}
+          </button>
+        </footer>
+      </ng-container>
 
-    <!--PROMPT-->
-    <ng-container *ngIf="modal.type === 'prompt'">
-      <section class="mnm-modal-card-body">
-        <div class="mnm-field">
-          <label class="mnm-label">{{modal.message}}</label>
-          <p class="mnm-control">
-            <input
-              (keyup)="submitPromptIfEnter(modal, $event)" class="mnm-input" type="text"
-              placeholder="{{modal.promptPlaceholder}}"
-              [(ngModel)]="modal.promptText">
-          </p>
-        </div>
-      </section>
-      <footer class="mnm-modal-card-foot">
-        <button (click)="submitPrompt(modal)" class="mnm-button is-success">{{modal.buttons[0]}}</button>
-        <button (click)="dismissModal(modal)" class="mnm-button">{{modal.buttons[1]}}</button>
-      </footer>
-    </ng-container>
+      <!--PROMPT-->
+      <ng-container *ngIf="modal.type === 'prompt'">
+        <section class="mnm-body">
+          <div class="mnm-field">
+            <label class="mnm-label">{{modal.message}}</label>
+            <p class="mnm-control">
+              <input
+                (keyup)="submitPromptIfEnter(modal, $event)" class="mnm-input" type="text"
+                placeholder="{{modal.promptPlaceholder}}"
+                [(ngModel)]="modal.promptText">
+            </p>
+          </div>
+        </section>
+        <footer class="mnm-foot">
+          <button (click)="submitPrompt(modal)" class="mnm-button is-success">{{modal.buttons[0]}}</button>
+          <button (click)="dismissModal(modal)" class="mnm-button">{{modal.buttons[1]}}</button>
+        </footer>
+      </ng-container>
 
 
-    <!--LIST-->
-    <ng-container *ngIf="modal.type === 'list'">
-      <section class="mnm-modal-card-body">
-        <button style="margin-top: 4px" *ngFor="let button of modal.buttons; let idx = index"
-                class="mnm-button"
-                (click)="submitModal(modal, idx)">{{button}}
-        </button>
-      </section>
-      <footer class="mnm-modal-card-foot">
-      </footer>
-    </ng-container>
+      <!--LIST-->
+      <ng-container *ngIf="modal.type === 'list'">
+        <section class="mnm-body">
+          <button style="margin-top: 4px" *ngFor="let button of modal.buttons; let idx = index"
+                  class="mnm-button"
+                  (click)="submitModal(modal, idx)">{{button}}
+          </button>
+        </section>
+        <footer class="mnm-foot">
+        </footer>
+      </ng-container>
 
+    </div>
   </div>
 </div>

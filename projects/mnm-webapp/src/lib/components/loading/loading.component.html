@@ -1,7 +1,10 @@
-<div class="loading-overlay" [ngClass]="{'active': isBlockingLoadingShown}">
-  <div class="hoja">LOADING</div>
+<div [@spinner]="isBlockingLoadingShown">
+  <div class="mnm-loading-overlay" *ngIf="isBlockingLoadingShown">
+    <div class="mnm-spinner"></div>
+  </div>
 </div>
 
-<div class="progress" [ngClass]="{'active': isLoadingShown}">
-  <div class="indeterminate"></div>
+
+<div class="mnm-progress" [ngClass]="{'is-active': isLoadingShown}">
+  <div class="mnm-indeterminate"></div>
 </div>

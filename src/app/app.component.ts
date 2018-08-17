@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NotificationService} from 'mnm-webapp';
+import {LoadingService, NotificationService} from 'mnm-webapp';
 
 @Component({
   selector: 'app-root',
@@ -11,11 +11,18 @@ export class AppComponent implements OnInit {
 
   private counter = 0;
 
-  constructor(private _notificationService: NotificationService) {
+  constructor(private _notificationService: NotificationService,
+              private _loadingService: LoadingService) {
   }
 
   ngOnInit() {
-    this.giveMeModal();
+    // this.giveMeModal();
+    // this._loadingService.showLoading();
+
+    setTimeout(() => {
+      this._loadingService.showBlockingLoading();
+      setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
+    }, 2000);
   }
 
   initiateDanger() {

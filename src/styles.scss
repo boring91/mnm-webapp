@@ -1,0 +1,35 @@
+.mnm-loading-overlay {
+
+  .mnm-spinner {
+    @keyframes mnm-rotating {
+      0% {
+        transform: rotate(0);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    border: 6px solid #6a6a6a;
+    border-top: 6px solid white;
+    margin: -32px auto 0;
+    animation: mnm-rotating 1.2s infinite cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

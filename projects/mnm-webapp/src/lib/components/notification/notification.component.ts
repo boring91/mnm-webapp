@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, Renderer, ViewChild} from '@angular/core';
+import {Component, NgZone, OnDestroy, Renderer} from '@angular/core';
 import {NotificationService} from './notification.service';
 import {NotificationType} from './notification-type';
 import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
@@ -32,6 +32,24 @@ import {Modal} from './modal';
         ]), {optional: true})
 
       ])
+    ]),
+    trigger('modalAnimation', [
+      transition('* => *', [
+        query(':enter', style({opacity: 0}), {optional: true}),
+        query(':enter', stagger('100ms', [
+          animate('100ms ease-in', keyframes([
+            style({opacity: 0.0, offset: 0.0}),
+            style({opacity: 1.0, offset: 1.0})
+          ]))
+        ]), {optional: true}),
+
+        query(':leave', stagger('100ms', [
+          animate('100ms ease-in', keyframes([
+            style({opacity: 1.0, offset: 0.0}),
+            style({opacity: 0.0, offset: 1.0})
+          ]))
+        ]), {optional: true})
+      ])
     ])
   ]
 })
@@ -61,6 +79,7 @@ export class NotificationComponent implements OnDestroy {
   private readonly _callback: (event: KeyboardEvent) => void;
 
   constructor(notificationService: NotificationService, private renderer: Renderer, private ngZone: NgZone) {
+    console.log('test 3');
     let alertClassName: string;
     notificationService.alerts$.subscribe(x => {
       switch (x.type) {

@@ -40,7 +40,7 @@ export class CustomValidators {
       if (!c.parent) {
         return null;
       }
-      return c.value[property] ? null : {required: true};
+      return c.value && c.value[property] ? null : {required: true};
     };
   }
 

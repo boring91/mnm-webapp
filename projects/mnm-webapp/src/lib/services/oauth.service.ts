@@ -1,16 +1,16 @@
 import {Inject, Injectable} from '@angular/core';
-import {MNMHttpInterceptor} from './http/mnm-http.interceptor';
+import {MNMHttpInterceptor} from './mnm-http.interceptor';
 import {BehaviorSubject, Observable, Subject, of} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {MNM_CONFIG} from '../mnm.config';
 import {MNMConfig} from '../mnm-config';
 import {AccessToken} from '../models/access-token';
 import {Claim} from '../models/claim';
-import {MNMUrlSearchParams} from './http/mnm-url-search-params';
 import {miscFunctions} from '../misc/misc-functions';
 import {UserInfo} from '../models/user-info';
-import {MNMHttpService} from './http/mnm-http.service';
 import {BroadcasterService} from './broadcaster/broadcaster.service';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Result} from '../models/result';
 
 @Injectable()
 export class OauthService {
@@ -39,7 +39,7 @@ export class OauthService {
     return oauthService._accessToken;
   }
 
-  constructor(private http: MNMHttpService, broadcaster: BroadcasterService,
+  constructor(private http: HttpClient, broadcaster: BroadcasterService,
               @Inject(MNM_CONFIG) config: MNMConfig) {
     this._auth$.next(this._accessToken);
     if (config) {
@@ -97,7 +97,10 @@ export class OauthService {
     this._isFetchingNewToken = true;
     this._tokenRefreshedNotifier = new Subject<AccessToken>();
 
-    const options = new MNMUrlSearchParams();
+    const options = new HttpParams();
+    const headers = new HttpHeaders();
+
+    headers.append('content-type', 'application/x-www-form-urlencoded');
 
     // notify the interceptor to force insecure connection (no authorization)
     options.set(MNMHttpInterceptor.FORCE_INSECURE, `${true}`);
@@ -107,7 +110,7 @@ export class OauthService {
       'grant_type': 'refresh_token',
       'client_id': 'roclient.public',
       'username': this._accessToken.username
-    }), {search: options, headers: {'content-type': 'application/x-www-form-urlencoded'}})
+    }), {params: options, headers: headers})
       .pipe(map(res => {
         const accessToken = OauthService.extractAccessToken(this, res, this._accessToken.username);
         this._tokenRefreshedNotifier.next(accessToken);
@@ -132,9 +135,18 @@ export class OauthService {
     if (!this._claimsUrl || this._claimsUrl === '') {
       return successfulObservable;
     }
-    return this.http.get(this._claimsUrl, {
-      headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }, true).pipe(tap(res => {
+
+    const options = new HttpParams();
+    const headers = new HttpHeaders();
+
+    headers.append('content-type', 'application/x-www-form-urlencoded');
+
+    // notify the interceptor to force insecure connection (no authorization)
+    options.set(MNMHttpInterceptor.FORCE_INSECURE, `${true}`);
+
+    return this.http.get<Result<any>>(this._claimsUrl, {
+      headers: headers, params: options
+    }).pipe(tap(res => {
       if (res.success !== 1) {
         return null;
       }

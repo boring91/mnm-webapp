@@ -9,10 +9,6 @@ export * from './lib/services/upload/upload-event-type';
 export * from './lib/services/upload/upload-event';
 export * from './lib/services/upload/upload.service';
 export * from './lib/services/oauth.service';
-export * from './lib/services/http/mnm-http.service';
-export * from './lib/services/http/mnm-http-options';
-export * from './lib/services/http/mnm-url-search-params';
-
 
 // components
 export * from './lib/components/loading/loading.component';

@@ -7,15 +7,15 @@ import {
   HttpResponse
 } from '@angular/common/http';
 import {Inject, Injectable, Injector} from '@angular/core';
-import {MNMConfig} from '../../mnm-config';
-import {MNM_CONFIG} from '../../mnm.config';
-import {defaultMnmConfig} from '../../mnm.config.default';
+import {MNMConfig} from '../mnm-config';
+import {MNM_CONFIG} from '../mnm.config';
+import {defaultMnmConfig} from '../mnm.config.default';
 import {Observable} from 'rxjs';
 import {tap, finalize, first, switchMap} from 'rxjs/operators';
-import {OauthService} from '../oauth.service';
-import {LoadingService} from '../../components/loading/loading.service';
-import {NotificationService} from '../../components/notification/notification.service';
-import {Result} from '../../models/result';
+import {OauthService} from './oauth.service';
+import {LoadingService} from '../components/loading/loading.service';
+import {NotificationService} from '../components/notification/notification.service';
+import {Result} from '../models/result';
 
 
 @Injectable()

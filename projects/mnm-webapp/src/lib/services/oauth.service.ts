@@ -1,6 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {MNMHttpInterceptor} from './mnm-http.interceptor';
-import {BehaviorSubject, Observable, Subject, of} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {MNM_CONFIG} from '../mnm.config';
 import {MNMConfig} from '../mnm-config';
@@ -11,6 +10,7 @@ import {UserInfo} from '../models/user-info';
 import {BroadcasterService} from './broadcaster/broadcaster.service';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Result} from '../models/result';
+import {mnmHttpInterceptorParams} from './http/mnm-http-interceptor-params';
 
 @Injectable()
 export class OauthService {
@@ -97,20 +97,22 @@ export class OauthService {
     this._isFetchingNewToken = true;
     this._tokenRefreshedNotifier = new Subject<AccessToken>();
 
-    const options = new HttpParams();
-    const headers = new HttpHeaders();
+    let params = new HttpParams();
+    let headers = new HttpHeaders();
 
-    headers.append('content-type', 'application/x-www-form-urlencoded');
+    headers = headers.append('content-type', 'application/x-www-form-urlencoded');
 
     // notify the interceptor to force insecure connection (no authorization)
-    options.set(MNMHttpInterceptor.FORCE_INSECURE, `${true}`);
+    params = params
+      .set(mnmHttpInterceptorParams.forceInsecure, `${true}`)
+      .set(mnmHttpInterceptorParams.sustainOnNavigation, `${true}`);
 
     return this.http.post(`${this._oauthUrl}/connect/token`, miscFunctions.objectToURLParams({
       'refresh_token': this._accessToken.refreshToken,
       'grant_type': 'refresh_token',
       'client_id': 'roclient.public',
       'username': this._accessToken.username
-    }), {params: options, headers: headers})
+    }), {params: params, headers: headers})
       .pipe(map(res => {
         const accessToken = OauthService.extractAccessToken(this, res, this._accessToken.username);
         this._tokenRefreshedNotifier.next(accessToken);
@@ -136,16 +138,16 @@ export class OauthService {
       return successfulObservable;
     }
 
-    const options = new HttpParams();
-    const headers = new HttpHeaders();
+    let params = new HttpParams();
+    let headers = new HttpHeaders();
 
-    headers.append('content-type', 'application/x-www-form-urlencoded');
+    headers = headers.append('content-type', 'application/x-www-form-urlencoded');
 
     // notify the interceptor to force insecure connection (no authorization)
-    options.set(MNMHttpInterceptor.FORCE_INSECURE, `${true}`);
+    params = params.set(mnmHttpInterceptorParams.sustainOnNavigation, `${true}`);
 
     return this.http.get<Result<any>>(this._claimsUrl, {
-      headers: headers, params: options
+      headers: headers, params: params
     }).pipe(tap(res => {
       if (res.success !== 1) {
         return null;

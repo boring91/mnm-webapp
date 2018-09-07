@@ -9,6 +9,7 @@ export * from './lib/services/upload/upload-event-type';
 export * from './lib/services/upload/upload-event';
 export * from './lib/services/upload/upload.service';
 export * from './lib/services/oauth.service';
+export * from './lib/services/http/mnm-http-interceptor-params';
 
 // components
 export * from './lib/components/loading/loading.component';

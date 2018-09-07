@@ -2,7 +2,7 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {MNMConfig} from './mnm-config';
 import {MNM_CONFIG} from './mnm.config';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {MNMHttpInterceptor} from './services/mnm-http.interceptor';
+import {MNMHttpInterceptor} from './services/http/mnm-http.interceptor';
 import {RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';

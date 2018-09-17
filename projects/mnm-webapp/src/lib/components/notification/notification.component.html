@@ -36,10 +36,10 @@
           <div class="mnm-field">
             <label class="mnm-label">{{modal.message}}</label>
             <p class="mnm-control">
-              <input
+              <textarea
                 (keyup)="submitPromptIfEnter(modal, $event)" class="mnm-input" type="text"
                 placeholder="{{modal.promptPlaceholder}}"
-                [(ngModel)]="modal.promptText">
+                [(ngModel)]="modal.promptText"></textarea>
             </p>
           </div>
         </section>

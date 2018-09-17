@@ -1,0 +1,8 @@
+<div [@wizardAnimation]="isShown">
+  <div *ngIf="isShown" class="mnm-wizard" (click)="hide()">
+    <div class="mnm-overlay"></div>
+    <div class="mnm-dialog" (click)="$event.cancelBubble = true">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

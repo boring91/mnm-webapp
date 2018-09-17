@@ -14,6 +14,7 @@ import {UploadService} from './services/upload/upload.service';
 import {OauthService} from './services/oauth.service';
 import {BroadcasterService} from './services/broadcaster/broadcaster.service';
 import {OnCreateDirective} from './directives/on-create.directive';
+import {WizardComponent} from './components/wizard/wizard.component';
 
 @NgModule({
   imports: [
@@ -25,12 +26,14 @@ import {OnCreateDirective} from './directives/on-create.directive';
   declarations: [
     NotificationComponent,
     LoadingComponent,
-    OnCreateDirective
+    OnCreateDirective,
+    WizardComponent
   ],
   exports: [
     NotificationComponent,
     LoadingComponent,
-    OnCreateDirective
+    OnCreateDirective,
+    WizardComponent
   ]
 })
 export class MnmWebappModule {

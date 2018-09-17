@@ -1,12 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {LoadingService, NotificationService} from 'mnm-webapp';
+import {WizardComponent} from '../../projects/mnm-webapp/src/lib/components/wizard/wizard.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('wizard') wizard: WizardComponent;
+
   title = 'mnm-webapp-app';
 
   private counter = 0;
@@ -19,8 +23,16 @@ export class AppComponent implements OnInit {
     // this.giveMeModal();
     // this._loadingService.showLoading();
 
+    // setTimeout(() => {
+    //   this._loadingService.showBlockingLoading();
+    //   setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
+    // }, 2000);
+
+  }
+
+  ngAfterViewInit() {
     setTimeout(() => {
-      this._loadingService.showBlockingLoading();
+      this.wizard.show();
       setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
     }, 2000);
   }

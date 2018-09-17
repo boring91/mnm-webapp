@@ -52,4 +52,13 @@ export class MnmWebappModule {
       ]
     };
   }
+
+  static forChild(): ModuleWithProviders {
+    return {
+      ngModule: MnmWebappModule,
+      providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: MNMHttpInterceptor, multi: true},
+      ]
+    };
+  }
 }

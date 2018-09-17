@@ -12,6 +12,7 @@ export * from './lib/services/oauth.service';
 export * from './lib/services/http/mnm-http-interceptor-params';
 
 // components
+export * from './lib/components/wizard/wizard.component';
 export * from './lib/components/loading/loading.component';
 export * from './lib/components/loading/loading.service';
 export * from './lib/components/notification/notification-type';

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {UploadEvent} from './upload-event';
 import {UploadEventType} from './upload-event-type';
-import {Observable, Observer, Subject} from 'rxjs';
-import {first, switchMap, finalize, share} from 'rxjs/operators';
+import {Observable, Observer, Subject, throwError} from 'rxjs';
+import {catchError, finalize, first, share, switchMap} from 'rxjs/operators';
 import {LoadingService} from '../../components/loading/loading.service';
 import {OauthService} from '../oauth.service';
 import {NotificationService} from '../../components/notification/notification.service';
@@ -103,23 +103,24 @@ export class UploadService {
       return () => {
         xhr.abort();
       };
-    }).catch((res: UploadEvent) => {
-      console.log(res);
-      try {
-        const result = res.data;
-        if (result['messages']) {
-          this.notificationService.notifyError(result['messages'][0]);
-        } else if (result['error_description']) {
-          this.notificationService.notifyError(result['error_description']);
-        } else {
+    }).pipe(
+      catchError((res: UploadEvent) => {
+        console.log(res);
+        try {
+          const result = res.data;
+          if (result['messages']) {
+            this.notificationService.notifyError(result['messages'][0]);
+          } else if (result['error_description']) {
+            this.notificationService.notifyError(result['error_description']);
+          } else {
+            this.notificationService.notifyError('Unknown error has occurred');
+          }
+        } catch (e) {
           this.notificationService.notifyError('Unknown error has occurred');
         }
-      } catch (e) {
-        this.notificationService.notifyError('Unknown error has occurred');
-      }
-      return Observable.throw(res);
-    })
-      .pipe(finalize(() => {
+        return throwError(res);
+      }),
+      finalize(() => {
         this.loadingService.hideLoading();
       }));
   }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {UploadEvent} from './upload-event';
 import {UploadEventType} from './upload-event-type';
 import {Observable, Observer, Subject} from 'rxjs';
-import {first, switchMap, finalize} from 'rxjs/operators';
+import {first, switchMap, finalize, share} from 'rxjs/operators';
 import {LoadingService} from '../../components/loading/loading.service';
 import {OauthService} from '../oauth.service';
 import {NotificationService} from '../../components/notification/notification.service';
@@ -19,7 +19,7 @@ export class UploadService {
               private notificationService: NotificationService) {
     this.progress$ = Observable.create(observer => {
       this.progressObserver = observer;
-    }).share();
+    }).pipe(share());
   }
 
   uploadAuth(url: string, params: any, headers: any = {}): Observable<UploadEvent> {

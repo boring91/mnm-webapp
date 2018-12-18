@@ -1,4 +1,4 @@
-import {AbstractControl, ValidationErrors} from '@angular/forms';
+import {AbstractControl, FormGroup, ValidationErrors} from '@angular/forms';
 
 // @dynamic
 export class CustomValidators {
@@ -22,13 +22,18 @@ export class CustomValidators {
     };
   }
 
-  // NOTE: put a change detector on the field
+  // NOTE: put a change detector on the field (this one can cause problem due
+  // to unreleased subscription)
   static match(matchWith: string): (c: AbstractControl) => ValidationErrors {
     return (c: AbstractControl) => {
       if (!c.parent) {
         return null;
       }
       const matched = c.value;
+      const formGroup = <FormGroup>c.parent;
+      formGroup.controls[matchWith].valueChanges.subscribe(() => {
+        c.updateValueAndValidity();
+      });
       const matching = c.parent.value[matchWith];
       const result = matched === matching;
       return result ? null : {match: true};

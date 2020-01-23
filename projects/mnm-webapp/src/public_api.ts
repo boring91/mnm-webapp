@@ -10,6 +10,7 @@ export * from './lib/services/upload/upload-event';
 export * from './lib/services/upload/upload.service';
 export * from './lib/services/oauth.service';
 export * from './lib/services/http/mnm-http-interceptor-params';
+export * from './lib/services/http/mnm-http.interceptor';
 
 // components
 export * from './lib/components/wizard/wizard.component';

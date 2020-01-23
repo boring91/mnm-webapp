@@ -57,7 +57,7 @@ export class MnmWebappModule {
     return {
       ngModule: MnmWebappModule,
       providers: [
-        {provide: HTTP_INTERCEPTORS, useClass: MNMHttpInterceptor, multi: true},
+        // {provide: HTTP_INTERCEPTORS, useClass: MNMHttpInterceptor, multi: true},
       ]
     };
   }

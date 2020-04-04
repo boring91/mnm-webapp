@@ -37,7 +37,7 @@ import {WizardComponent} from './components/wizard/wizard.component';
   ]
 })
 export class MnmWebappModule {
-  static forRoot(mnmConfig?: MNMConfig): ModuleWithProviders {
+  static forRoot(mnmConfig?: MNMConfig): ModuleWithProviders<MnmWebappModule> {
     return {
       ngModule: MnmWebappModule,
       providers: [
@@ -53,7 +53,7 @@ export class MnmWebappModule {
     };
   }
 
-  static forChild(): ModuleWithProviders {
+  static forChild(): ModuleWithProviders<MnmWebappModule> {
     return {
       ngModule: MnmWebappModule,
       providers: [

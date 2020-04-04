@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, Renderer} from '@angular/core';
+import { Component, NgZone, OnDestroy, Renderer2 } from '@angular/core';
 import {NotificationService} from './notification.service';
 import {NotificationType} from './notification-type';
 import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
@@ -78,7 +78,7 @@ export class NotificationComponent implements OnDestroy {
 
   private readonly _callback: (event: KeyboardEvent) => void;
 
-  constructor(notificationService: NotificationService, private renderer: Renderer, private ngZone: NgZone) {
+  constructor(notificationService: NotificationService, private renderer: Renderer2, private ngZone: NgZone) {
     console.log('test 3');
     let alertClassName: string;
     notificationService.alerts$.subscribe(x => {

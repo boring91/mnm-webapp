@@ -67,7 +67,7 @@ export const miscFunctions = {
     const rect = el.getBoundingClientRect(),
       scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
       scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return {top: rect.top + scrollTop, left: rect.left + scrollLeft};
+    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
   },
 
   getEmptyObject: function (obj: any = {}): any {
@@ -98,10 +98,16 @@ export const miscFunctions = {
     }
   },
 
-  getBase64: (file: File, callback: (string) => void) => {
+  getBase64: (file: File, callback: (bytes, mime, format) => void) => {
+    const tokens = file.name.split('.');
+    const format = tokens.length > 1 ? tokens[tokens.length - 1] : ''
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => callback(reader.result.split(',')[1]);
-    reader.onerror = () => callback(null);
-  }
+    reader.onload = () => {
+      const tokens = (reader.result as string).split(',')
+      const mimeType = tokens[0].replace('data:', '').replace(';base64', '')
+      callback(tokens[1], mimeType, format)
+    };
+    reader.onerror = () => callback(null, null, null);
+  },
 };

@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  @ViewChild('wizard') wizard: WizardComponent;
+  @ViewChild('wizard', {static: true}) wizard: WizardComponent;
 
 
   constructor(private appService: AppService,

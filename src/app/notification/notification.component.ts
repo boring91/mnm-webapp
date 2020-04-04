@@ -7,7 +7,7 @@ import {WizardComponent, LoadingService, NotificationService} from '../../../pro
 })
 export class NotificationComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('wizard') wizard: WizardComponent;
+  @ViewChild('wizard', {static: true}) wizard: WizardComponent;
 
   title = 'mnm-webapp-app';
 

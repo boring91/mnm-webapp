@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, NgZone, OnDestroy, Renderer2, Input } from '@angular/core';
 import {NotificationService} from './notification.service';
 import {NotificationType} from './notification-type';
 import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
@@ -54,6 +54,8 @@ import {Modal} from './modal';
   ]
 })
 export class NotificationComponent implements OnDestroy {
+  @Input('modalPrimaryButtonClasses') public modalPrimaryButtonClasses = ''
+  @Input('modalSecondaryButtonClasses') public modalSecondaryButtonClasses = ''
 
   /**
    * For the alert

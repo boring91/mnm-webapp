@@ -24,7 +24,6 @@ export class NotificationService {
     modals$: Observable<any> = this.modalSubject.asObservable();
 
     constructor() {
-        console.log('Notification service has been constructed');
     }
 
     notifySuccess(message: string) {

@@ -81,7 +81,6 @@ export class NotificationComponent implements OnDestroy {
   private readonly _callback: (event: KeyboardEvent) => void;
 
   constructor(notificationService: NotificationService, private renderer: Renderer2, private ngZone: NgZone) {
-    console.log('test 3');
     let alertClassName: string;
     notificationService.alerts$.subscribe(x => {
       switch (x.type) {

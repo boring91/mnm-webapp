@@ -53,19 +53,16 @@ export class NotificationComponent implements OnInit, AfterViewInit {
 
   giveMeModal() {
     this._notificationService.modal('hello', 'this is the message', number => {
-      console.log(number);
     }, 'Yes', 'No');
   }
 
   giveMePrompt() {
     this._notificationService.prompt('hello', 'promp here', 'okay', 'cancel', string => {
-      console.log(string);
     });
   }
 
   giveMeList() {
     this._notificationService.selectList('hello', number => {
-      console.log(number);
     }, 'list item 1', 'list item 2', 'list item 3');
   }
 }

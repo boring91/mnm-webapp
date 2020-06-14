@@ -105,7 +105,6 @@ export class UploadService {
       };
     }).pipe(
       catchError((res: UploadEvent) => {
-        console.log(res);
         try {
           const result = res.data;
           if (result['messages']) {

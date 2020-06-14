@@ -1,16 +1,16 @@
-import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
-import {Inject, Injectable, Injector} from '@angular/core';
-import {MNMConfig} from '../../mnm-config';
-import {MNM_CONFIG} from '../../mnm.config';
-import {defaultMnmConfig} from '../../mnm.config.default';
-import {Observable, Subject} from 'rxjs';
-import {finalize, first, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {OauthService} from '../oauth.service';
-import {LoadingService} from '../../components/loading/loading.service';
-import {NotificationService} from '../../components/notification/notification.service';
-import {Result} from '../../models/result';
-import {NavigationStart, Router} from '@angular/router';
-import {mnmHttpInterceptorParams} from './mnm-http-interceptor-params';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Inject, Injectable, Injector } from '@angular/core';
+import { MNMConfig } from '../../mnm-config';
+import { MNM_CONFIG } from '../../mnm.config';
+import { defaultMnmConfig } from '../../mnm.config.default';
+import { Observable, Subject, throwError as observableThrowError } from 'rxjs';
+import { finalize, first, switchMap, takeUntil, tap, catchError } from 'rxjs/operators';
+import { OauthService } from '../oauth.service';
+import { LoadingService } from '../../components/loading/loading.service';
+import { NotificationService } from '../../components/notification/notification.service';
+import { Result } from '../../models/result';
+import { NavigationStart, Router } from '@angular/router';
+import { mnmHttpInterceptorParams } from './mnm-http-interceptor-params';
 
 
 @Injectable()
@@ -29,11 +29,11 @@ export class MNMHttpInterceptor implements HttpInterceptor {
   private _sustainRequestObservable = this._sustainRequestSubject$.asObservable();
 
   constructor(@Inject(MNM_CONFIG) private readonly _mnmConfig: MNMConfig,
-              private _loadingService: LoadingService,
-              private _notificationService: NotificationService,
-              private _router: Router,
-              private _inj: Injector) {
-    this._mnmConfig = {...defaultMnmConfig, ...this._mnmConfig};
+    private _loadingService: LoadingService,
+    private _notificationService: NotificationService,
+    private _router: Router,
+    private _inj: Injector) {
+    this._mnmConfig = { ...defaultMnmConfig, ...this._mnmConfig };
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -48,6 +48,7 @@ export class MNMHttpInterceptor implements HttpInterceptor {
     const isStealth = req.params.get(mnmHttpInterceptorParams.stealth) === 'true';
     const isForceInsecure = req.params.get(mnmHttpInterceptorParams.forceInsecure) === 'true';
     const isSustainOnNav = req.params.get(mnmHttpInterceptorParams.sustainOnNavigation) === 'true';
+    const areNotificationsHidden = req.params.get(mnmHttpInterceptorParams.hideNotifications) === 'true';
 
     // remove the stealth and forceInsecure parameters
     req = req.clone({
@@ -66,12 +67,12 @@ export class MNMHttpInterceptor implements HttpInterceptor {
     };
 
     const errorHandler = (res: HttpErrorResponse) => {
-      if (isStealth) {
+      if (isStealth || areNotificationsHidden) {
         return;
       }
-      if (res.error && res.error.messages) {
+      if (res.error && res.error.messages && !areNotificationsHidden) {
         this._notificationService.notifyError(res.error['messages'][0]);
-      } else {
+      } else if (!areNotificationsHidden) {
         this._notificationService.notifyError(res.message);
       }
     };
@@ -117,11 +118,13 @@ export class MNMHttpInterceptor implements HttpInterceptor {
                     req = req.clone({
                       headers: req.headers.set('Authorization', 'Bearer ' + newAccessToken.value)
                     });
-                    return next.handle(req)
-                      .pipe(
-                        takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
-                        tap(successHandler, errorHandler),
-                        finalize(cleanUpHandler));
+                    return this.createObservable(next, req, isSustainOnNav, successHandler, errorHandler, cleanUpHandler);
+
+                    // return next.handle(req)
+                    //   .pipe(
+                    //     takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
+                    //     tap(successHandler, errorHandler),
+                    //     finalize(cleanUpHandler));
                   })
                 );
 
@@ -130,19 +133,36 @@ export class MNMHttpInterceptor implements HttpInterceptor {
                 req = req.clone({
                   headers: req.headers.set('Authorization', 'Bearer ' + accessToken.value)
                 });
-                return next.handle(req).pipe(
-                  takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
-                  tap(successHandler, errorHandler),
-                  finalize(cleanUpHandler));
+                return this.createObservable(next, req, isSustainOnNav, successHandler, errorHandler, cleanUpHandler);
+
+                // return next.handle(req).pipe(
+                //   takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
+                //   tap(successHandler, errorHandler),
+                //   finalize(cleanUpHandler));
               }
             })
           );
         }
-        return next.handle(req).pipe(
-          takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
-          tap(successHandler, errorHandler),
-          finalize(cleanUpHandler));
+        return this.createObservable(next, req, isSustainOnNav, successHandler, errorHandler, cleanUpHandler);
+
+        // return next.handle(req).pipe(
+        //   takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
+        //   tap(successHandler, errorHandler),
+        //   finalize(cleanUpHandler));
       })
     );
+  }
+
+  private createObservable(
+    next: HttpHandler,
+    req: HttpRequest<any>,
+    isSustainOnNav: boolean,
+    successHandler: (res: HttpResponse<Result<any>>) => void,
+    errorHandler: (res: HttpErrorResponse) => void,
+    cleanUpHandler: () => void): Observable<HttpEvent<any>> {
+    return next.handle(req).pipe(
+      takeUntil(isSustainOnNav ? this._sustainRequestObservable : this._cancelRequestObservable),
+      tap(successHandler, errorHandler),
+      finalize(cleanUpHandler));
   }
 }

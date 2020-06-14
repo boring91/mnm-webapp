@@ -1,24 +1,24 @@
-import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {map, switchMap, tap} from 'rxjs/operators';
-import {MNM_CONFIG} from '../mnm.config';
-import {MNMConfig} from '../mnm-config';
-import {AccessToken} from '../models/access-token';
-import {Claim} from '../models/claim';
-import {miscFunctions} from '../misc/misc-functions';
-import {UserInfo} from '../models/user-info';
-import {BroadcasterService} from './broadcaster/broadcaster.service';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Result} from '../models/result';
-import {mnmHttpInterceptorParams} from './http/mnm-http-interceptor-params';
+import { Inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { MNM_CONFIG } from '../mnm.config';
+import { MNMConfig } from '../mnm-config';
+import { AccessToken } from '../models/access-token';
+import { Claim } from '../models/claim';
+import { miscFunctions } from '../misc/misc-functions';
+import { UserInfo } from '../models/user-info';
+import { BroadcasterService } from './broadcaster/broadcaster.service';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Result } from '../models/result';
+import { mnmHttpInterceptorParams } from './http/mnm-http-interceptor-params';
 
 @Injectable()
 export class OauthService {
 
   private _accessToken = new AccessToken();
   private _auth$ = new BehaviorSubject<AccessToken>(null);
-  private _oauthUrl;
-  private readonly _claimsUrl;
+  private _oauthUrl: string;
+  private readonly _claimsUrl: string;
 
   private _isFetchingNewToken = false;
   private _tokenRefreshedNotifier: Subject<AccessToken>;
@@ -40,7 +40,7 @@ export class OauthService {
   }
 
   constructor(private http: HttpClient, broadcaster: BroadcasterService,
-              @Inject(MNM_CONFIG) config: MNMConfig) {
+    @Inject(MNM_CONFIG) config: MNMConfig) {
     this._auth$.next(this._accessToken);
     if (config) {
       this._oauthUrl = config.oauthConfig.oauthUrl;
@@ -72,13 +72,18 @@ export class OauthService {
    */
   login(email: string, password: string, persist: boolean): Observable<string> {
 
+    const params = new HttpParams()
+      .set(mnmHttpInterceptorParams.hideNotifications, `${true}`);
+
     return this.http.post(`${this._oauthUrl}/connect/token`, miscFunctions.objectToURLParams({
       'username': email,
       'password': password,
       'grant_type': 'password',
-      'client_id': 'roclient.public'
+      'client_id': 'roclient.public',
+      '': ''
     }), {
-      headers: {'content-type': 'application/x-www-form-urlencoded'}
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      params
     })
       .pipe(switchMap(res => {
 
@@ -105,14 +110,15 @@ export class OauthService {
     // notify the interceptor to force insecure connection (no authorization)
     params = params
       .set(mnmHttpInterceptorParams.forceInsecure, `${true}`)
-      .set(mnmHttpInterceptorParams.sustainOnNavigation, `${true}`);
+      .set(mnmHttpInterceptorParams.sustainOnNavigation, `${true}`)
+      .set(mnmHttpInterceptorParams.hideNotifications, `${true}`);
 
     return this.http.post(`${this._oauthUrl}/connect/token`, miscFunctions.objectToURLParams({
       'refresh_token': this._accessToken.refreshToken,
       'grant_type': 'refresh_token',
       'client_id': 'roclient.public',
       'username': this._accessToken.username
-    }), {params: params, headers: headers})
+    }), { params: params, headers: headers })
       .pipe(map(res => {
         const accessToken = OauthService.extractAccessToken(this, res, this._accessToken.username);
         this._tokenRefreshedNotifier.next(accessToken);
@@ -145,6 +151,7 @@ export class OauthService {
 
     // notify the interceptor to force insecure connection (no authorization)
     params = params.set(mnmHttpInterceptorParams.sustainOnNavigation, `${true}`);
+    params = params.set(mnmHttpInterceptorParams.hideNotifications, `${true}`);
 
     return this.http.get<Result<any>>(this._claimsUrl, {
       headers: headers, params: params
@@ -153,10 +160,9 @@ export class OauthService {
         return null;
       }
       const extra = res.extra.claims;
-      this._accessToken.claims = extra.map(x => <Claim[]> x);
+      this._accessToken.claims = extra.map(x => <Claim[]>x);
       this._accessToken.save();
       this._auth$.next(this._accessToken);
     })).pipe(switchMap(x => successfulObservable));
   }
-
 }

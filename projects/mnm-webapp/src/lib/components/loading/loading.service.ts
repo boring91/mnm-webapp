@@ -12,7 +12,6 @@ export class LoadingService {
 
 
   constructor() {
-    console.log('loading service is constructed');
   }
 
   showLoading() {

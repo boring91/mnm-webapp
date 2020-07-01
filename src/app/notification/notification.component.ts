@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {WizardComponent, LoadingService, NotificationService} from '../../../projects/mnm-webapp/src/public_api';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { WizardComponent, LoadingService, NotificationService } from '../../../projects/mnm-webapp/src/public_api';
 
 @Component({
   selector: 'app-notification',
@@ -7,32 +7,33 @@ import {WizardComponent, LoadingService, NotificationService} from '../../../pro
 })
 export class NotificationComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('wizard', {static: true}) wizard: WizardComponent;
+  @ViewChild('wizard', { static: true }) wizard: WizardComponent;
 
   title = 'mnm-webapp-app';
 
   private counter = 0;
 
   constructor(private _notificationService: NotificationService,
-              private _loadingService: LoadingService) {
+    private _loadingService: LoadingService) {
   }
 
   ngOnInit() {
     // this.giveMeModal();
-    // this._loadingService.showLoading();
+    // this._loadingService.showBlockingLoading();
 
     // setTimeout(() => {
     //   this._loadingService.showBlockingLoading();
     //   setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
     // }, 2000);
-
+    this.giveMeModal();
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.wizard.show();
-      setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
-    }, 2000);
+    // setTimeout(() => {
+    //   this.wizard.show();
+    //   setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
+    // }, 2000);
+    // this._loadingService.showBlockingLoading();
   }
 
   initiateDanger() {

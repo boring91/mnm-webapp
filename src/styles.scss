@@ -1,6 +1,13 @@
+/* Blocking Loader */
 .mnm-loading-overlay {
-
   .mnm-spinner {
+    animation: mnm-rotating 1.2s infinite cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    border: 6px solid #6a6a6a;
+    border-radius: 50%;
+    border-top: 6px solid white;
+    height: 64px;
+    margin: -32px auto 0;
+    width: 64px;
     @keyframes mnm-rotating {
       0% {
         transform: rotate(0);
@@ -9,27 +16,40 @@
         transform: rotate(360deg);
       }
     }
-    border-radius: 50%;
-    width: 64px;
-    height: 64px;
-    border: 6px solid #6a6a6a;
-    border-top: 6px solid white;
-    margin: -32px auto 0;
-    animation: mnm-rotating 1.2s infinite cubic-bezier(0.785, 0.135, 0.15, 0.86);
   }
 }
+/* End Blocking Loader */
 
+/* Modal */
+.mnm-modal {
+  .mnm-card {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 1px 1px 6px 4px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    padding: 1em 2em;
+    width: 500px;
+  }
 
+  .mnm-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    position: absolute;
+    right: 4px;
+    top: 5px;
+    &::after {
+      content: "×";
+    }
+  }
 
+  .mnm-title {
+    font-weight: bold;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
+  .mnm-foot {
+    text-align: right;
+  }
+}
+/* End Modal */

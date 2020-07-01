@@ -17,8 +17,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.appService.test().subscribe();
+    // this.appService.test().subscribe();
     this.router.navigate(['', 'notification'])
-
   }
 }

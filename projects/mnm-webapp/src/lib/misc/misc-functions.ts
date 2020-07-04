@@ -98,7 +98,7 @@ export const miscFunctions = {
     }
   },
 
-  getBase64: (file: File, callback: (bytes, mime, format) => void) => {
+  getBase64: (file: File, callback: (dataurl, bytes, mime, format) => void) => {
     const tokens = file.name.split('.');
     const format = tokens.length > 1 ? tokens[tokens.length - 1] : ''
     const reader = new FileReader();
@@ -106,8 +106,8 @@ export const miscFunctions = {
     reader.onload = () => {
       const tokens = (reader.result as string).split(',')
       const mimeType = tokens[0].replace('data:', '').replace(';base64', '')
-      callback(tokens[1], mimeType, format)
+      callback(reader.result, tokens[1], mimeType, format)
     };
-    reader.onerror = () => callback(null, null, null);
+    reader.onerror = () => callback(null, null, null, null);
   },
 };

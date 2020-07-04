@@ -25,7 +25,8 @@ export class NotificationComponent implements OnInit, AfterViewInit {
     //   this._loadingService.showBlockingLoading();
     //   setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
     // }, 2000);
-    this.giveMeModal();
+    // this.giveMeModal();
+    this.initiateDanger();
   }
 
   ngAfterViewInit() {

@@ -1,3 +1,49 @@
+/* Alert Notifications */
+.mnm-remove {
+  left: unset !important;
+  right: 0 !important;
+}
+
+.mnm-alerts-container {
+  top: 0 !important;
+  bottom: unset !important;
+  padding: 0 !important;
+  margin: 5px 0 0 !important;
+  width: 100%;
+}
+.mnm-notification {
+  color: white;
+  border-radius: 4px;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+
+  .mnm-remove {
+    color: white;
+  }
+
+  &.is-danger {
+    background: red;
+  }
+
+  &.is-warning {
+    background: orange;
+    color: black;
+
+    .mnm-remove {
+      color: black;
+    }
+  }
+
+  &.is-success {
+    background: green;
+  }
+
+  &.is-info {
+    background: cyan;
+  }
+}
+/* End Alert Notifications */
+
 /* Blocking Loader */
 .mnm-loading-overlay {
   .mnm-spinner {

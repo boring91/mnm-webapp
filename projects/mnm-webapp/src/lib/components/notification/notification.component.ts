@@ -181,7 +181,7 @@ export class NotificationComponent implements OnDestroy {
   }
 
   setAlertTimer(alert: Alert) {
-    // alert.timerId = setTimeout(() => this.dismissAlert(alert.id), 3000);
+    alert.timerId = setTimeout(() => this.dismissAlert(alert.id), 3000);
   }
 
   removeAlertTimer(alert: Alert) {

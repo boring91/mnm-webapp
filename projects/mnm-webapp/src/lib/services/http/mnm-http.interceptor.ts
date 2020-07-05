@@ -84,7 +84,10 @@ export class MNMHttpInterceptor implements HttpInterceptor {
     };
 
     // set the content type of the request to form urlencoded
-    if (!req.headers.has('content-type')) {
+    // Check the body type, if it is string, then most probably it has been
+    // set with miscFunctions.objectToURLParams. In such a case, attach the 
+    // the default contentType header, default: 'application/x-www-form-urlencoded'
+    if (!req.headers.has('content-type') && typeof (req.body) === 'string') {
       req = req.clone({
         headers: req.headers.set('content-type', this._mnmConfig.http.contentType)
       });

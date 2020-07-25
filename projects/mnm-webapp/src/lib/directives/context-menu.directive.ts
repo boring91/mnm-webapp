@@ -17,7 +17,7 @@ export class ContextMenuDirective {
 
     private hideShownMenu = () => {
         if (this.shownMenu) {
-            this.renderer.removeChild(document.documentElement, this.shownMenu);
+            this.renderer.removeChild(document.body, this.shownMenu);
             this.shownMenu = null;
 
             window.removeEventListener('click', this.hideShownMenu);
@@ -65,6 +65,10 @@ export class ContextMenuDirective {
     private buildContextMenu(x: number, y: number) {
         this.hideShownMenu();
 
+        const pageWidth = document.body.offsetWidth;
+        const pageHeight = document.body.offsetHeight;
+        const threshold = 150;
+
         const menuItems = this.items.map(x => {
             const button = document.createElement('button');
             button.innerHTML = x.name;
@@ -78,12 +82,26 @@ export class ContextMenuDirective {
 
 
         this.shownMenu = document.createElement('div');
+        this.shownMenu.style.display = 'flex'
+        this.shownMenu.style.flexDirection = 'flex-column'
         this.shownMenu.style.position = 'absolute';
-        this.shownMenu.style.left = `${x}px`;
-        this.shownMenu.style.top = `${y}px`;
+
+        if (x + threshold < pageWidth) {
+            this.shownMenu.style.left = `${x}px`;
+        } else {
+            this.shownMenu.style.right = `${pageWidth - x}px`;
+        }
+
+        if (y + threshold < pageHeight) {
+            this.shownMenu.style.top = `${y}px`;
+        } else {
+            this.shownMenu.style.bottom = `${pageHeight - y}px`;
+        }
+
         this.shownMenu.append(...menuItems);
 
-        this.renderer.appendChild(document.documentElement, this.shownMenu);
+        this.renderer.addClass(this.shownMenu, 'mnm-context-menu');
+        this.renderer.appendChild(document.body, this.shownMenu);
 
         setTimeout(() => {
             window.addEventListener('click', this.hideShownMenu);

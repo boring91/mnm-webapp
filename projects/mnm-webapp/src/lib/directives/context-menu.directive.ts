@@ -17,7 +17,6 @@ export class ContextMenuDirective {
 
     private hideShownMenu = () => {
         if (this.shownMenu) {
-            console.log('here');
             this.renderer.removeChild(document.documentElement, this.shownMenu);
             this.shownMenu = null;
 
@@ -45,15 +44,15 @@ export class ContextMenuDirective {
     public showContextMenu(event: TouchEvent | MouseEvent) {
         let x = undefined, y = undefined;
 
-        if (event instanceof TouchEvent && (
-            event.touches.length === 1 && !this.onRightClick ||
-            event.touches.length === 2 && this.onRightClick
+        if ((event as TouchEvent).touches && (
+            (event as TouchEvent).touches.length === 1 && !this.onRightClick ||
+            (event as TouchEvent).touches.length === 2 && this.onRightClick
         )) {
-            x = event.touches[0].screenX;
-            y = event.touches[0].screenY;
-        } else if (event instanceof MouseEvent && !this.onRightClick) {
-            x = event.pageX;
-            y = event.pageY;
+            x = (event as TouchEvent).touches[0].screenX;
+            y = (event as TouchEvent).touches[0].screenY;
+        } else if (!this.onRightClick) {
+            x = (event as MouseEvent).pageX;
+            y = (event as MouseEvent).pageY;
         }
 
         if (x && y) {

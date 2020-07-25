@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  @ViewChild('wizard', {static: true}) wizard: WizardComponent;
+  @ViewChild('wizard', { static: true }) wizard: WizardComponent;
 
 
   constructor(private appService: AppService,
@@ -18,6 +18,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     // this.appService.test().subscribe();
-    this.router.navigate(['', 'notification'])
+    // this.router.navigate(['', 'notification'])
+  }
+  test(id: string) {
+    alert(id);
   }
 }

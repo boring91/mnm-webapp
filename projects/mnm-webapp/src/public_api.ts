@@ -21,7 +21,7 @@ export * from './lib/components/notification/notification.component';
 export * from './lib/components/notification/notification.service';
 
 // directives
-export * from './lib/directives/on-create.directive';
+export * from './lib/directives';
 
 // models
 export * from './lib/models/access-token';

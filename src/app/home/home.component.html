@@ -1,0 +1,9 @@
+<button style="font-size: 40rem;"
+        [mnmContextMenu]="[{
+    id: 'hello',
+    name: 'Hello'
+}, {
+    id: 'there',
+    name: 'There'
+}]"
+        (menuItemSelected)="test($event)">click me</button>

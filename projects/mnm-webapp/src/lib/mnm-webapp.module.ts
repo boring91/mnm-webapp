@@ -21,7 +21,7 @@ import { WizardComponent } from './components/wizard/wizard.component';
     CommonModule,
     FormsModule,
     RouterModule,
-    HttpClientModule
+    // HttpClientModule
   ],
   declarations: [
     NotificationComponent,

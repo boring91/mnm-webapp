@@ -50,7 +50,6 @@ export class MnmWebappModule {
         { provide: HTTP_INTERCEPTORS, useClass: MNMHttpInterceptor, multi: true },
         OauthService,
         BroadcasterService,
-        HttpClientModule
       ]
     };
   }

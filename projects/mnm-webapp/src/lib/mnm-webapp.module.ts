@@ -15,6 +15,8 @@ import { OauthService } from './services/oauth.service';
 import { BroadcasterService } from './services/broadcaster/broadcaster.service';
 import { OnCreateDirective, ContextMenuDirective } from './directives';
 import { WizardComponent } from './components/wizard/wizard.component';
+import { DefaultNotificationHandler } from './components/notification/default.notification-handler';
+import { MNM_NOTIFICATION_HANDLER } from './components/notification/notification-handler';
 
 @NgModule({
   imports: [
@@ -48,6 +50,7 @@ export class MnmWebappModule {
         UploadService,
         { provide: MNM_CONFIG, useValue: mnmConfig },
         { provide: HTTP_INTERCEPTORS, useClass: MNMHttpInterceptor, multi: true },
+        { provide: MNM_NOTIFICATION_HANDLER, useClass: DefaultNotificationHandler, multi: false },
         OauthService,
         BroadcasterService,
       ]

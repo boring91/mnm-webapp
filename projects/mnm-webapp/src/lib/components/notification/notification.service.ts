@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {NotificationType} from './notification-type';
-import {Observable, Subject} from 'rxjs';
+import { Injectable, Inject } from '@angular/core';
+import { NotificationType } from './notification-type';
+import { Observable, Subject } from 'rxjs';
+import { NotificationHandler, MNM_NOTIFICATION_HANDLER } from './notification-handler';
 
 
 @Injectable()
-export class NotificationService {
+export class NotificationService implements NotificationHandler {
 
-
-    private alerter = new Subject<any>();
-    alerts$: Observable<any> = this.alerter.asObservable();
+    // private alerter = new Subject<any>();
+    // alerts$: Observable<any> = this.alerter.asObservable();
 
     private modalSubject = new Subject<{
         title: string,
@@ -23,23 +23,27 @@ export class NotificationService {
     }>();
     modals$: Observable<any> = this.modalSubject.asObservable();
 
-    constructor() {
+    constructor(@Inject(MNM_NOTIFICATION_HANDLER) private notificationHandler: NotificationHandler) {
     }
 
     notifySuccess(message: string) {
-        this.alerter.next({message: message, type: NotificationType.Success});
+        this.notificationHandler.notifySuccess(message);
+        // this.alerter.next({ message: message, type: NotificationType.Success });
     }
 
     notifyInfo(message: string) {
-        this.alerter.next({message: message, type: NotificationType.Info});
+        this.notificationHandler.notifyInfo(message);
+        // this.alerter.next({ message: message, type: NotificationType.Info });
     }
 
     notifyWarn(message: string) {
-        this.alerter.next({message: message, type: NotificationType.Warn});
+        this.notificationHandler.notifyWarn(message);
+        // this.alerter.next({ message: message, type: NotificationType.Warn });
     }
 
     notifyError(message: string) {
-        this.alerter.next({message: message, type: NotificationType.Error});
+        this.notificationHandler.notifyError(message);
+        // this.alerter.next({ message: message, type: NotificationType.Error });
     }
 
 
@@ -54,7 +58,7 @@ export class NotificationService {
     }
 
     prompt(title: string, message, positive: string, negative: string, callback: (string) => void, defaultText: string = '',
-           placeholder: string = '') {
+        placeholder: string = '') {
         this.modalSubject.next({
             title: title,
             message: message,

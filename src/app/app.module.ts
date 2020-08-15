@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { HomeComponent } from './home/home.component';
 import { NotificationComponent } from './notification/notification.component';
 import { AppRoutingModule } from './app.routing';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { AppRoutingModule } from './app.routing';
     BrowserModule,
     BrowserAnimationsModule,
     MnmWebappModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
   ],
   providers: [AppService],
   bootstrap: [AppComponent]

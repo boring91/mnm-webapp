@@ -1,10 +1,12 @@
-import { Component, NgZone, OnDestroy, Renderer2, Input } from '@angular/core';
-import {NotificationService} from './notification.service';
-import {NotificationType} from './notification-type';
-import {animate, keyframes, query, stagger, style, transition, trigger} from '@angular/animations';
-import {miscFunctions} from '../../misc/misc-functions';
-import {Alert} from './alert';
-import {Modal} from './modal';
+import { Component, NgZone, OnDestroy, Renderer2, Input, Inject } from '@angular/core';
+import { NotificationService } from './notification.service';
+import { NotificationType } from './notification-type';
+import { animate, keyframes, query, stagger, style, transition, trigger } from '@angular/animations';
+import { miscFunctions } from '../../misc/misc-functions';
+import { Alert } from './alert';
+import { Modal } from './modal';
+import { DefaultNotificationHandler } from './default.notification-handler';
+import { NotificationHandler, MNM_NOTIFICATION_HANDLER } from './notification-handler';
 
 @Component({
   selector: 'mnm-notification',
@@ -13,42 +15,42 @@ import {Modal} from './modal';
   animations: [
     trigger('listAnimation', [
       transition('* => *', [
-        query(':enter', style({opacity: 0}), {optional: true}),
+        query(':enter', style({ opacity: 0 }), { optional: true }),
 
         query(':enter', stagger('200ms', [
           animate('200ms ease-in', keyframes([
-            style({opacity: 0.0, offset: 0.0}),
-            style({opacity: 0.7, offset: 0.7}),
-            style({opacity: 1.0, offset: 1.0})
+            style({ opacity: 0.0, offset: 0.0 }),
+            style({ opacity: 0.7, offset: 0.7 }),
+            style({ opacity: 1.0, offset: 1.0 })
           ]))
-        ]), {optional: true}),
+        ]), { optional: true }),
 
         query(':leave', stagger('200ms', [
           animate('200ms ease-in', keyframes([
-            style({opacity: 1.0, offset: 0.0}),
-            style({opacity: 0.5, offset: 0.3}),
-            style({opacity: 0.0, offset: 1.0})
+            style({ opacity: 1.0, offset: 0.0 }),
+            style({ opacity: 0.5, offset: 0.3 }),
+            style({ opacity: 0.0, offset: 1.0 })
           ]))
-        ]), {optional: true})
+        ]), { optional: true })
 
       ])
     ]),
     trigger('modalAnimation', [
       transition('* => *', [
-        query(':enter', style({opacity: 0}), {optional: true}),
+        query(':enter', style({ opacity: 0 }), { optional: true }),
         query(':enter', stagger('100ms', [
           animate('100ms ease-in', keyframes([
-            style({opacity: 0.0, offset: 0.0}),
-            style({opacity: 1.0, offset: 1.0})
+            style({ opacity: 0.0, offset: 0.0 }),
+            style({ opacity: 1.0, offset: 1.0 })
           ]))
-        ]), {optional: true}),
+        ]), { optional: true }),
 
         query(':leave', stagger('100ms', [
           animate('100ms ease-in', keyframes([
-            style({opacity: 1.0, offset: 0.0}),
-            style({opacity: 0.0, offset: 1.0})
+            style({ opacity: 1.0, offset: 0.0 }),
+            style({ opacity: 0.0, offset: 1.0 })
           ]))
-        ]), {optional: true})
+        ]), { optional: true })
       ])
     ])
   ]
@@ -60,56 +62,63 @@ export class NotificationComponent implements OnDestroy {
   /**
    * For the alert
    */
-    // @ViewChild('alert') alert;
-    // alertMessage = '';
+  // @ViewChild('alert') alert;
+  // alertMessage = '';
   alerts: Alert[] = [];
 
 
   /**
    * For the modal
    */
-    // @ViewChild('modal') modal;
-    // modalTitle = '';
-    // modalMessage = '';
-    // modalButtons = [];
-    // modalCallback = null;
-    // promptPlaceholder = '';
-    // type = '';
-    // promptText = '';
+  // @ViewChild('modal') modal;
+  // modalTitle = '';
+  // modalMessage = '';
+  // modalButtons = [];
+  // modalCallback = null;
+  // promptPlaceholder = '';
+  // type = '';
+  // promptText = '';
   modals: Modal[] = [];
 
   private readonly _callback: (event: KeyboardEvent) => void;
 
-  constructor(notificationService: NotificationService, private renderer: Renderer2, private ngZone: NgZone) {
+  constructor(
+    private renderer: Renderer2,
+    private ngZone: NgZone,
+    notificationService: NotificationService,
+    @Inject(MNM_NOTIFICATION_HANDLER) private notificationHandler: NotificationHandler
+  ) {
     let alertClassName: string;
-    notificationService.alerts$.subscribe(x => {
-      switch (x.type) {
-        case NotificationType.Success:
-          alertClassName = 'is-success';
-          break;
-        case NotificationType.Info:
-          alertClassName = 'is-info';
-          break;
-        case NotificationType.Warn:
-          alertClassName = 'is-warning';
-          break;
-        case NotificationType.Error:
-          alertClassName = 'is-danger';
-          break;
-      }
-      // this.alertMessage = x.message;
-      // renderer.setElementClass(this.alert.nativeElement, 'is-active', true);
-      // setTimeout(() => {
-      //   this.dismissAlert();
-      // }, 5000);
-      const alert = {
-        id: miscFunctions.uuid(),
-        text: x.message,
-        className: alertClassName
-      };
-      this.alerts.push(alert);
-      this.setAlertTimer(alert);
-    });
+    if ((notificationHandler as any).alerts$) {
+      (notificationHandler as DefaultNotificationHandler).alerts$.subscribe(x => {
+        switch (x.type) {
+          case NotificationType.Success:
+            alertClassName = 'is-success';
+            break;
+          case NotificationType.Info:
+            alertClassName = 'is-info';
+            break;
+          case NotificationType.Warn:
+            alertClassName = 'is-warning';
+            break;
+          case NotificationType.Error:
+            alertClassName = 'is-danger';
+            break;
+        }
+        // this.alertMessage = x.message;
+        // renderer.setElementClass(this.alert.nativeElement, 'is-active', true);
+        // setTimeout(() => {
+        //   this.dismissAlert();
+        // }, 5000);
+        const alert = {
+          id: miscFunctions.uuid(),
+          text: x.message,
+          className: alertClassName
+        };
+        this.alerts.push(alert);
+        this.setAlertTimer(alert);
+      });
+    }
 
     notificationService.modals$.subscribe(x => {
       // this.modalButtons = [];

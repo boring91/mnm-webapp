@@ -19,6 +19,7 @@ export * from './lib/components/loading/loading.service';
 export * from './lib/components/notification/notification-type';
 export * from './lib/components/notification/notification.component';
 export * from './lib/components/notification/notification.service';
+export * from './lib/components/notification/notification-handler';
 
 // directives
 export * from './lib/directives';

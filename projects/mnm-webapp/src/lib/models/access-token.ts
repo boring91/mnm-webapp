@@ -1,5 +1,5 @@
-import {Claim} from './claim';
-import {miscFunctions} from '../misc/misc-functions';
+import { Claim } from './claim';
+import { miscFunctions } from '../misc/misc-functions';
 
 export class AccessToken {
   value: string;
@@ -12,7 +12,9 @@ export class AccessToken {
 
   constructor() {
     // JSON.parse(window.localStorage.getItem('accessToken'));
-    const acStr = miscFunctions.getCookie('accessToken');
+    // const acStr = miscFunctions.getCookie('accessToken');
+    const acStr = localStorage.getItem('accessToken');
+
     if (acStr) {
       const accessToken: AccessToken = JSON.parse(acStr);
       this.acquiredAt = accessToken.acquiredAt;
@@ -30,16 +32,18 @@ export class AccessToken {
    */
   save() {
     // window.localStorage.setItem('accessToken', JSON.stringify(this));
-    const d = new Date();
-    d.setFullYear(d.getFullYear() + 1);
-    const expires = this.persist ? d : null;
-    miscFunctions.setCookie('accessToken', JSON.stringify(this), expires);
-
+    // const d = new Date();
+    // d.setFullYear(d.getFullYear() + 1);
+    // const expires = this.persist ? d : null;
+    // miscFunctions.setCookie('accessToken', JSON.stringify(this), expires);
+    
+    localStorage.setItem('accessToken', JSON.stringify(this));
   }
 
   clear() {
     // window.localStorage.removeItem('accessToken');
-    miscFunctions.deleteCookie('accessToken');
+    // miscFunctions.deleteCookie('accessToken');
+    localStorage.removeItem('accessToken');
 
     this.value = undefined;
     this.refreshToken = undefined;

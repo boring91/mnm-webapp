@@ -35,7 +35,6 @@ export class CustomValidators {
         c.updateValueAndValidity();
       });
       const matching = c.parent.value[matchWith] || undefined;
-      console.log({ matched, matching });
       const result = matched === matching;
       return result ? null : { match: true };
     };

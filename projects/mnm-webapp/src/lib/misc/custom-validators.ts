@@ -1,4 +1,4 @@
-import {AbstractControl, FormGroup, ValidationErrors} from '@angular/forms';
+import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
 
 // @dynamic
 export class CustomValidators {
@@ -18,7 +18,7 @@ export class CustomValidators {
         return null;
       }
       const result = c.parent.controls[field].value === hasValue && !c.value;
-      return result ? {requiredif: true} : null;
+      return result ? { requiredif: true } : null;
     };
   }
 
@@ -29,14 +29,15 @@ export class CustomValidators {
       if (!c.parent) {
         return null;
       }
-      const matched = c.value;
+      const matched = c.value || undefined;
       const formGroup = <FormGroup>c.parent;
       formGroup.controls[matchWith].valueChanges.subscribe(() => {
         c.updateValueAndValidity();
       });
-      const matching = c.parent.value[matchWith];
+      const matching = c.parent.value[matchWith] || undefined;
+      console.log({ matched, matching });
       const result = matched === matching;
-      return result ? null : {match: true};
+      return result ? null : { match: true };
     };
   }
 
@@ -45,7 +46,7 @@ export class CustomValidators {
       if (!c.parent) {
         return null;
       }
-      return c.value && c.value[property] ? null : {required: true};
+      return c.value && c.value[property] ? null : { required: true };
     };
   }
 
@@ -59,21 +60,21 @@ export class CustomValidators {
     if (!value || value === '' || value.match(CustomValidators.dateRegex)) {
       return null;
     }
-    return {date: true};
+    return { date: true };
   }
 
   static time(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || c.value.match(CustomValidators.timeRegex)) {
       return null;
     }
-    return {time: true};
+    return { time: true };
   }
 
   static number(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || c.value.match('^\\-?(?:\\d+)?(?:\\.?\\d+)$')) {
       return null;
     }
-    return {number: true};
+    return { number: true };
   }
 
   static phone(c: AbstractControl): ValidationErrors {
@@ -81,13 +82,13 @@ export class CustomValidators {
       // if (!c.value || c.value === '' || c.value.match('^(?:971|\\+971|0)?5[024568][1-9][\\d]{6}$')) {
       return null;
     }
-    return {phone: true};
+    return { phone: true };
   }
 
   static integer(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || `${c.value}`.match('^\\d+$')) {
       return null;
     }
-    return {integer: true};
+    return { integer: true };
   }
 }

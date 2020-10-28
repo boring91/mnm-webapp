@@ -3,48 +3,35 @@ body {
 }
 
 /* Alert Notifications */
-.mnm-remove {
-  left: unset !important;
-  right: 0 !important;
+.mnm-alerts-container {
+  left: 50%;
+  max-width: 80%;
+  position: fixed;
+  top: 0;
+  transform: translateX(-50%);
+  width: 400px;
 }
 
-.mnm-alerts-container {
-  top: 0 !important;
-  bottom: unset !important;
-  padding: 0 !important;
-  margin: 5px 0 0 !important;
-  width: 100%;
-}
 .mnm-notification {
-  color: white;
+  background: red;
   border-radius: 4px;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.3);
-  margin: 0 auto;
+  color: white;
+  margin-top: 5px;
+  padding: 1em 1em;
+  position: relative;
+}
 
-  .mnm-remove {
-    color: white;
-  }
-
-  &.is-danger {
-    background: red;
-  }
-
-  &.is-warning {
-    background: orange;
-    color: black;
-
-    .mnm-remove {
-      color: black;
-    }
-  }
-
-  &.is-success {
-    background: green;
-  }
-
-  &.is-info {
-    background: cyan;
-  }
+.mnm-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 10px;
+  position: absolute;
+  right: 2px;
+  text-align: center;
+  top: 2px;
+  width: 10px;
 }
 /* End Alert Notifications */
 

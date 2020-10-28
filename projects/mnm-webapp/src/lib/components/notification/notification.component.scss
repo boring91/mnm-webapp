@@ -1,43 +1,42 @@
-.mnm-alerts-container {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  margin: 5px;
-  overflow: visible;
-  max-height: 100vh;
-  z-index: 10000;
-  width: auto;
-  left: 50%;
-  left: 50%;
-  transform: translateX(-50%);
+// .mnm-alerts-container {
+//   position: fixed;
+//   margin: 5px 0;
+//   overflow: visible;
+//   max-height: 100vh;
+//   z-index: 10000;
+//   left: 50%;
+//   width: auto;
+//   transform: translateX(-50%);
 
-  .mnm-notification {
-    position: relative;
-    width: 390px;
-    padding: 21px;
-    display: none;
+//   .mnm-notification {
+//     position: relative;
+//     width: 700px;
+//     max-width: 80%;
+//     padding: 21px;
+//     display: none;
+//     box-sizing: border-box;
 
-    &.is-active {
-      display: block;
-    }
+//     &.is-active {
+//       display: block;
+//     }
 
-    &:not(:last-child) {
-      margin-bottom: 5px;
-    }
+//     &:not(:last-child) {
+//       margin-bottom: 5px;
+//     }
 
-    .mnm-remove {
-      position: absolute;
-      top: 0;
-      right: 0;
-      margin: 3px;
-      background: none;
-      border: none;
-      outline: none;
-      font-size: 19px;
-      cursor: pointer;
-    }
-  }
-}
+//     .mnm-remove {
+//       position: absolute;
+//       top: 0;
+//       right: 0;
+//       margin: 3px;
+//       background: none;
+//       border: none;
+//       outline: none;
+//       font-size: 19px;
+//       cursor: pointer;
+//     }
+//   }
+// }
 
 .mnm-modal {
   position: fixed;

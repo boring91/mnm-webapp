@@ -30,12 +30,22 @@ export class CustomValidators {
         return null;
       }
       const matched = c.value || undefined;
-      const formGroup = <FormGroup>c.parent;
-      formGroup.controls[matchWith].valueChanges.subscribe(() => {
-        c.updateValueAndValidity();
-      });
-      const matching = c.parent.value[matchWith] || undefined;
-      const result = matched === matching;
+
+      let subscription = (c as any).matchWithSubscription;
+
+      if (!subscription) {
+        const formGroup = <FormGroup>c.parent;
+        subscription = formGroup.controls[matchWith].valueChanges.subscribe((matchingValue) => {
+          (c as any).matchingValue = matchingValue;
+          c.updateValueAndValidity();
+        });
+        (c as any).matchWithSubscription = subscription;
+      }
+
+      const result = matched === (c as any).matchingValue;
+
+      console.log({ matched, matching: (c as any).matchingValue })
+
       return result ? null : { match: true };
     };
   }

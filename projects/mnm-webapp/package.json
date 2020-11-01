@@ -1,6 +1,6 @@
 {
   "name": "mnm-webapp",
-  "version": "3.4.8",
+  "version": "3.4.9",
   "dependencies": {
     "tslib": "^2.0.0"
   }

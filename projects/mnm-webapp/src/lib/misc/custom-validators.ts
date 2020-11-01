@@ -12,7 +12,7 @@ export class CustomValidators {
   private static timeRegex = '(?:^$|^(?:[0-1]\\d|2[0-3]):[0-5]\\d$)';
 
   // NOTE: put a change detector on the field
-  static requiredIf(field: string, hasValue?: any): (c: AbstractControl) => ValidationErrors {
+  public static requiredIf(field: string, hasValue?: any): (c: AbstractControl) => ValidationErrors {
     return (c: AbstractControl) => {
       if (!c.parent) {
         return null;
@@ -24,7 +24,7 @@ export class CustomValidators {
 
   // NOTE: put a change detector on the field (this one can cause problem due
   // to unreleased subscription)
-  static match(matchWith: string): (c: AbstractControl) => ValidationErrors {
+  public static match(matchWith: string): (c: AbstractControl) => ValidationErrors {
     return (c: AbstractControl) => {
       if (!c.parent) {
         return null;
@@ -40,7 +40,7 @@ export class CustomValidators {
     };
   }
 
-  static requiredPropertyInObject(property: string): (c: AbstractControl) => ValidationErrors {
+  public static requiredPropertyInObject(property: string): (c: AbstractControl) => ValidationErrors {
     return (c: AbstractControl) => {
       if (!c.parent) {
         return null;
@@ -49,7 +49,7 @@ export class CustomValidators {
     };
   }
 
-  static date(c: AbstractControl): ValidationErrors {
+  public static date(c: AbstractControl): ValidationErrors {
     let value = c.value;
     if (c.value instanceof Object) {
       if (c.value['formatted']) {
@@ -62,21 +62,21 @@ export class CustomValidators {
     return { date: true };
   }
 
-  static time(c: AbstractControl): ValidationErrors {
+  public static time(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || c.value.match(CustomValidators.timeRegex)) {
       return null;
     }
     return { time: true };
   }
 
-  static number(c: AbstractControl): ValidationErrors {
+  public static number(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || c.value.match('^\\-?(?:\\d+)?(?:\\.?\\d+)$')) {
       return null;
     }
     return { number: true };
   }
 
-  static phone(c: AbstractControl): ValidationErrors {
+  public static phone(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || c.value.match('^\\-?(?:\\d+)?(?:\\.?\\d+)$')) {
       // if (!c.value || c.value === '' || c.value.match('^(?:971|\\+971|0)?5[024568][1-9][\\d]{6}$')) {
       return null;
@@ -84,10 +84,22 @@ export class CustomValidators {
     return { phone: true };
   }
 
-  static integer(c: AbstractControl): ValidationErrors {
+  public static integer(c: AbstractControl): ValidationErrors {
     if (!c.value || c.value === '' || `${c.value}`.match('^\\d+$')) {
       return null;
     }
     return { integer: true };
+  }
+
+  public static maxFileSize(maxFileSize: number, maxFileSizeDisplay: string = ''): (c: AbstractControl) => ValidationErrors {
+    return (c: AbstractControl) => {
+      if (!c.value || c.value === '') {
+        return null;
+      }
+
+      const fileSize = (c.value.length * (3 / 4)) - (c.value.endsWith('==') ? 2 : c.value.endsWith('=') ? 1 : 0);
+
+      return fileSize > maxFileSize ? { maxfilesize: { maxFileSize, maxFileSizeDisplay } } : null;
+    }
   }
 }

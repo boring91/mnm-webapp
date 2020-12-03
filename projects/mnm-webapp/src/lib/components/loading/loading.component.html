@@ -4,7 +4,11 @@
   </div>
 </div>
 
-
-<div class="mnm-progress" [ngClass]="{'is-active': isLoadingShown}">
+<div
+  [@indeterminteLoader]="isLoadingShown"
+  *ngIf="isLoadingShown"
+  class="mnm-progress"
+  [ngClass]="{ 'is-active': isLoadingShown }"
+>
   <div class="mnm-indeterminate"></div>
 </div>

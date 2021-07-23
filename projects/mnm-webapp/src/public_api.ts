@@ -11,6 +11,7 @@ export * from './lib/services/upload/upload.service';
 export * from './lib/services/oauth.service';
 export * from './lib/services/http/mnm-http-interceptor-params';
 export * from './lib/services/http/mnm-http.interceptor';
+export * from './lib/services/modal/modal.service';
 
 // components
 export * from './lib/components/wizard/wizard.component';
@@ -20,6 +21,7 @@ export * from './lib/components/notification/notification-type';
 export * from './lib/components/notification/notification.component';
 export * from './lib/components/notification/notification.service';
 export * from './lib/components/notification/notification-handler';
+export * from './lib/components/main/main.component';
 
 // directives
 export * from './lib/directives';

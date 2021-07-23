@@ -1,0 +1,68 @@
+.mnm-modal-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.mnm-modal-dialog {
+    position: relative;
+    background: white;
+    border-radius: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 90%;
+    width: 700px;
+    max-height: 80%;
+    overflow: hidden;
+    margin: 0 auto;
+    box-shadow: 1px 1px 17px -3px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.mnm-modal-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem 1rem;
+    border-bottom: 1px solid rgba(141, 89, 89, 0.2);
+}
+
+.mnm-modal-title {
+    flex-grow: 1;
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: bold;
+}
+
+.mnm-modal-close-button {
+    border: none;
+    top: 0;
+    background: none;
+    font-size: 1.5rem;
+    color: rgba(0, 0, 0, 0.5);
+    outline: none;
+    cursor: pointer;
+
+    &:hover {
+        color: rgba(0, 0, 0, 1);
+    }
+
+    // Default ltr.
+    right: 0;
+    left: auto;
+
+    html[dir='rtl'] & {
+        right: auto;
+        left: 0;
+    }
+}
+
+.mnm-modal-container {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}

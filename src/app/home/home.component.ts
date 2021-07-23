@@ -1,46 +1,41 @@
 import {
     Component,
     EventEmitter,
+    Injector,
     Input,
+    NgModuleRef,
     OnDestroy,
     OnInit,
     Output,
+    ViewContainerRef,
 } from '@angular/core';
-import { ModalService } from '../../../projects/mnm-webapp/src/public_api';
+import {
+    LoadingService,
+    ModalService,
+    NotificationService,
+} from '../../../projects/mnm-webapp/src/public_api';
+import { HomeService } from './home.service';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
 })
 export class HomeComponent {
-    public constructor(private testService: ModalService) {}
+    public constructor(
+        private testService: ModalService,
+        private module: NgModuleRef<any>
+    ) {}
 
     public async showModal(): Promise<void> {
-        await this.testService.show(TestModalComponent);
+        // return;
+        await this.testService.show(TestModalComponent, {
+            moduleRef: this.module,
+            beforeInit: c => {
+                c.input = { value: 'hello' };
+            },
+        });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @Component({
     selector: 'app-test-modal',
@@ -97,11 +92,25 @@ export class HomeComponent {
         </div>
     `,
 })
-export class TestModalComponent implements OnDestroy {
-    @Input() public input = 'Initial input';
+export class TestModalComponent implements OnInit, OnDestroy {
+    @Input() public input: any;
     @Output() public emit = new EventEmitter();
 
-    public constructor(private testService: ModalService) {}
+    public constructor(
+        private testService: ModalService,
+        private homeService: HomeService,
+        private loadingService: LoadingService
+    ) {
+        loadingService.showLoading();
+
+        setTimeout(() => {
+            this.loadingService.hideLoading();
+        }, 3000);
+    }
+
+    public ngOnInit(): void {
+        console.log(this.input.value);
+    }
 
     public showModal(): void {
         this.testService.show(TestModalComponent);

@@ -71,8 +71,7 @@ export class ModalComponent implements OnDestroy {
         const ref = this.container.createComponent(factory);
         const containerComponent = ref.instance;
 
-        containerComponent.disableAutoDismiss = options.disableAutoDismiss;
-        containerComponent.title = options.title;
+        containerComponent.options = options;
 
         this.activeContainers.push({
             component: containerComponent,

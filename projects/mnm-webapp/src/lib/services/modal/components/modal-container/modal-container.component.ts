@@ -5,9 +5,9 @@ import {
     ViewChild,
     ViewContainerRef,
     ComponentFactoryResolver,
-    Input,
 } from '@angular/core';
 import { ModalService } from '../../modal.service';
+import { ModalOptions } from '../../models/modal-options';
 import { animations } from './animation';
 
 @Component({
@@ -17,8 +17,7 @@ import { animations } from './animation';
     animations: animations,
 })
 export class ModalContainerComponent implements AfterViewInit {
-    @Input() public title: string = '';
-    @Input() public disableAutoDismiss: boolean = false;
+    public options: ModalOptions;
 
     // The place where the component will be loaded.
     @ViewChild('modalContentContainer', { read: ViewContainerRef })
@@ -71,12 +70,32 @@ export class ModalContainerComponent implements AfterViewInit {
         const factory = this.componentFactoryResolver.resolveComponentFactory(
             this.pendingComponentType
         );
-        const ref = this.modalContentContainer.createComponent(factory);
-        ref.changeDetectorRef.detectChanges();
+
+        const ref = this.modalContentContainer.createComponent(
+            factory,
+            undefined,
+            undefined,
+            undefined,
+            this.options.moduleRef
+        );
 
         // Set the loaded component and resolve
         // the promise.
         this.loadedComponent = ref.instance;
         this.componentLoadingPromiseResolve(this.loadedComponent);
+
+        // Run before init before detecting changes
+        // (detecting changes would invoke the ngOnChange
+        // on the component. Any @Input needed by the component
+        // inside the ngOnInit should be initialized inside
+        // the beforeInit() function option).
+        if (this.options.beforeInit) {
+            this.options.beforeInit(this.loadedComponent);
+        }
+
+        ref.changeDetectorRef.detectChanges();
+
+        // Nulify the pending component.
+        this.pendingComponentType = null;
     }
 }

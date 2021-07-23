@@ -5,20 +5,17 @@ import { NgModule } from '@angular/core';
 const routes: Routes = [
     {
         path: '',
-        component: HomeComponent
+        loadChildren: () =>
+            import('./home/home.module').then(m => m.HomeModule),
     },
     {
         path: 'notification',
-        component: NotificationComponent
-    }
-]
+        component: NotificationComponent,
+    },
+];
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(routes)
-    ],
-    exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
 })
-export class AppRoutingModule {
-
-}
+export class AppRoutingModule {}

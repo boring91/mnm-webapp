@@ -5,6 +5,8 @@ import {
     ViewChild,
     ViewContainerRef,
     ComponentFactoryResolver,
+    ElementRef,
+    Renderer2,
 } from '@angular/core';
 import { ModalService } from '../../modal.service';
 import { ModalOptions } from '../../models/modal-options';
@@ -23,6 +25,10 @@ export class ModalContainerComponent implements AfterViewInit {
     @ViewChild('modalContentContainer', { read: ViewContainerRef })
     private modalContentContainer: ViewContainerRef;
 
+    // The container div.
+    @ViewChild('dialog')
+    private dialog: ElementRef<HTMLDivElement>;
+
     public loadedComponent: any;
 
     private componentLoadingPromiseResolve: (component: any) => void;
@@ -30,10 +36,23 @@ export class ModalContainerComponent implements AfterViewInit {
 
     public constructor(
         private modalService: ModalService,
-        private componentFactoryResolver: ComponentFactoryResolver
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private renderer: Renderer2
     ) {}
 
     public ngAfterViewInit(): void {
+        // Set the size of the modal.
+        this.renderer.setStyle(
+            this.dialog.nativeElement,
+            'width',
+            this.options.size?.width ?? '700px'
+        );
+        this.renderer.setStyle(
+            this.dialog.nativeElement,
+            'height',
+            this.options.size?.height ?? 'auto'
+        );
+
         this.tryLoad();
     }
 
@@ -45,13 +64,15 @@ export class ModalContainerComponent implements AfterViewInit {
     public load(component: Type<any>): Promise<any> {
         // Check if there is a pending loading going,
         // resolve to null in that case.
-        if (this.componentLoadingPromiseResolve)
+        if (this.componentLoadingPromiseResolve) {
             this.componentLoadingPromiseResolve(null);
+        }
 
         // Create a new promise for the new load.
         const promise = new Promise(
             resolve => (this.componentLoadingPromiseResolve = resolve)
         );
+
         this.pendingComponentType = component;
         this.tryLoad();
 
@@ -95,7 +116,7 @@ export class ModalContainerComponent implements AfterViewInit {
 
         ref.changeDetectorRef.detectChanges();
 
-        // Nulify the pending component.
+        // Nullify the pending component.
         this.pendingComponentType = null;
     }
 }

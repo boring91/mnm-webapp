@@ -11,8 +11,9 @@ export class ModalService {
 
     public async show<T>(
         componentType: Type<T>,
-        options: ModalOptions<T> = { disableAutoDismiss: false, title: '' }
+        options: ModalOptions<T> = {}
     ): Promise<T> {
+        options = { ...{ disableAutoDismiss: false, title: '' }, ...options };
         // Use the framework-wide broadcaster service
         // to notify the modal component of a new component
         // that should be loaded as modal.

@@ -1,18 +1,15 @@
 import {
     Component,
     EventEmitter,
-    Injector,
     Input,
     NgModuleRef,
     OnDestroy,
     OnInit,
     Output,
-    ViewContainerRef,
 } from '@angular/core';
 import {
     LoadingService,
     ModalService,
-    NotificationService,
 } from '../../../projects/mnm-webapp/src/public_api';
 import { HomeService } from './home.service';
 
@@ -32,6 +29,10 @@ export class HomeComponent {
             moduleRef: this.module,
             beforeInit: c => {
                 c.input = { value: 'hello' };
+            },
+            size: {
+                width: '30%',
+                height: '90vh',
             },
         });
     }
@@ -99,7 +100,8 @@ export class TestModalComponent implements OnInit, OnDestroy {
     public constructor(
         private testService: ModalService,
         private homeService: HomeService,
-        private loadingService: LoadingService
+        private loadingService: LoadingService,
+        private moduleRef: NgModuleRef<any>
     ) {
         loadingService.showLoading();
 
@@ -108,15 +110,16 @@ export class TestModalComponent implements OnInit, OnDestroy {
         }, 3000);
     }
 
-    public ngOnInit(): void {
-        console.log(this.input.value);
-    }
+    public ngOnInit(): void {}
 
     public showModal(): void {
-        this.testService.show(TestModalComponent);
+        this.testService.show(TestModalComponent, {
+            moduleRef: this.moduleRef,
+            size: {
+                width: '400px',
+            },
+        });
     }
 
-    public ngOnDestroy(): void {
-        console.log('destroyed');
-    }
+    public ngOnDestroy(): void {}
 }

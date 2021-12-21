@@ -65,19 +65,25 @@ export class ModalComponent implements OnDestroy {
         options: ModalOptions,
         callback: (component: any) => void
     ): Promise<any> {
+        // Create a component for the container of the contents.
+        // of the modal (the content is a custom component)
         const factory = this.componentFactoryResolver.resolveComponentFactory(
             ModalContainerComponent
         );
         const ref = this.container.createComponent(factory);
         const containerComponent = ref.instance;
 
+        // Pass the options to the container component.
         containerComponent.options = options;
 
+        // Register the container as one of the
+        // shown dialogs.
         this.activeContainers.push({
             component: containerComponent,
             onDismiss: options.onDismiss,
         });
 
+        // Try and load the content of the modal (custom component).
         const loadedContentComponent = await containerComponent.load(
             componentType
         );

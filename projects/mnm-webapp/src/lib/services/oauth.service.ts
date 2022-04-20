@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { MNM_CONFIG } from '../mnm.config';
 import { MNMConfig } from '../mnm-config';
 import { AccessToken } from '../models/access-token';
@@ -166,10 +166,20 @@ export class OauthService {
                         this.accessToken.username
                     );
                     this.tokenRefreshedNotifier.next(accessToken);
+                    return accessToken;
+                }),
+                catchError(e => {
+                    // Failure to refresh indicates an issue
+                    // with generating new access token, log
+                    // out the user.
+                    this.logout();
+                    this.tokenRefreshedNotifier.error(e);
+                    return of(e);
+                }),
+                finalize(() => {
                     this.tokenRefreshedNotifier.complete();
                     this.isFetchingNewToken = false;
                     this.tokenRefreshedNotifier = null;
-                    return accessToken;
                 })
             );
     }

@@ -10,7 +10,7 @@ import { Inject, Injectable, Injector } from '@angular/core';
 import { MNMConfig } from '../../mnm-config';
 import { MNM_CONFIG } from '../../mnm.config';
 import { defaultMnmConfig } from '../../mnm.config.default';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import {
     finalize,
     first,
@@ -25,6 +25,7 @@ import { NotificationService } from '../../components/notification/notification.
 import { Result } from '../../models/result';
 import { NavigationStart, Router } from '@angular/router';
 import { mnmHttpInterceptorParams } from './mnm-http-interceptor-params';
+import { AccessToken } from '../../models/access-token';
 
 @Injectable()
 export class MNMHttpInterceptor implements HttpInterceptor {
@@ -152,23 +153,45 @@ export class MNMHttpInterceptor implements HttpInterceptor {
                                                 ? this._sustainRequestObservable
                                                 : this._cancelRequestObservable
                                         ),
-                                        switchMap(newAccessToken => {
-                                            req = req.clone({
-                                                headers: req.headers.set(
-                                                    'Authorization',
-                                                    'Bearer ' +
-                                                        newAccessToken.value
-                                                ),
-                                            });
-                                            return this.createObservable(
-                                                next,
-                                                req,
-                                                isSustainOnNav,
-                                                successHandler,
-                                                errorHandler,
-                                                cleanUpHandler
-                                            );
-                                        })
+                                        // Catch when failing to refresh token.
+                                        catchError(e => {
+                                            errorHandler(e);
+                                            return of(e);
+                                        }),
+                                        finalize(cleanUpHandler),
+                                        switchMap(
+                                            (
+                                                newAccessToken:
+                                                    | AccessToken
+                                                    | HttpErrorResponse
+                                            ) => {
+                                                // If failed to refresh token.
+                                                if (
+                                                    newAccessToken instanceof
+                                                    HttpErrorResponse
+                                                ) {
+                                                    return of(
+                                                        newAccessToken as any
+                                                    );
+                                                }
+
+                                                req = req.clone({
+                                                    headers: req.headers.set(
+                                                        'Authorization',
+                                                        'Bearer ' +
+                                                            newAccessToken.value
+                                                    ),
+                                                });
+                                                return this.createObservable(
+                                                    next,
+                                                    req,
+                                                    isSustainOnNav,
+                                                    successHandler,
+                                                    errorHandler,
+                                                    cleanUpHandler
+                                                );
+                                            }
+                                        )
                                     );
 
                                 // else, authorize the request using the existing access token.

@@ -29,8 +29,6 @@ export class AccessToken {
      * Saves the access token to the cookie
      */
     save() {
-        console.log('Saving...');
-
         // Get a copy of this object.
         const accessToken = JSON.parse(JSON.stringify(this));
 
@@ -64,7 +62,7 @@ export class AccessToken {
         }
 
         const acquiredSeconds = this.acquiredAt / 1000;
-        const currentTime = Date.now() / 1000;
+        const currentTime = Date.now() / 1000 + 1; // +1 second just in case.
 
         // Ensure that the token is not expired and there is
         // a value for the access token (nullified on page reload)

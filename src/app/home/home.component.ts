@@ -31,11 +31,6 @@ export class HomeComponent {
     ) {
         oauthService.userInfo$.pipe(first()).subscribe(x => {
             if (!x.isLoggedIn) return;
-
-            this.fetchCredits();
-            this.fetchCredits();
-            this.fetchCredits();
-            this.fetchCredits();
         });
     }
 
@@ -55,7 +50,7 @@ export class HomeComponent {
 
     public login() {
         const username = 'm2008m1033m@gmail.com';
-        const password = 'Onepiece12!';
+        const password = 'Naruto12!';
         this.oauthService.login(username, password, true).subscribe(res => {
             console.log(res);
             this.fetchCredits();

@@ -5,10 +5,3 @@ package-lock.json
 node_modules
 dist
 **/*.min.js
-projects/injaz/src/assets/**/*
-projects/injaz/src/styles/app.bundel.scss
-projects/injaz/src/styles/cairo-font.scss
-projects/injaz/src/styles/theme-variables.scss
-projects/injaz/src/styles/theme.scss
-projects/injaz/src/styles/toastr.scss
-projects/injaz/src/styles/vendors.bundle.scss

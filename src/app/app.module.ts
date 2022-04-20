@@ -15,7 +15,12 @@ import { HttpClientModule } from '@angular/common/http';
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
-        MnmWebappModule.forRoot(),
+        MnmWebappModule.forRoot({
+            oauthConfig: {
+                claimsUrl: 'http://localhost:5000/claims',
+                oauthUrl: 'http://localhost:5000',
+            },
+        }),
         AppRoutingModule,
         HttpClientModule,
     ],

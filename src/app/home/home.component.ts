@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import {
     Component,
     EventEmitter,
@@ -7,9 +8,11 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
+import { first } from 'rxjs/operators';
 import {
     LoadingService,
     ModalService,
+    OauthService,
 } from '../../../projects/mnm-webapp/src/public_api';
 import { HomeService } from './home.service';
 
@@ -18,10 +21,23 @@ import { HomeService } from './home.service';
     templateUrl: './home.component.html',
 })
 export class HomeComponent {
+    public credits = -1;
+
     public constructor(
         private testService: ModalService,
-        private module: NgModuleRef<any>
-    ) {}
+        private module: NgModuleRef<any>,
+        public oauthService: OauthService,
+        public httpClient: HttpClient
+    ) {
+        oauthService.userInfo$.pipe(first()).subscribe(x => {
+            if (!x.isLoggedIn) return;
+
+            this.fetchCredits();
+            this.fetchCredits();
+            this.fetchCredits();
+            this.fetchCredits();
+        });
+    }
 
     public async showModal(): Promise<void> {
         // return;
@@ -35,6 +51,26 @@ export class HomeComponent {
                 height: '90vh',
             },
         });
+    }
+
+    public login() {
+        const username = 'm2008m1033m@gmail.com';
+        const password = 'Onepiece12!';
+        this.oauthService.login(username, password, true).subscribe(res => {
+            console.log(res);
+            this.fetchCredits();
+        });
+    }
+
+    public logout() {
+        this.oauthService.logout();
+        this.credits = -1;
+    }
+
+    public fetchCredits() {
+        this.httpClient
+            .get('http://localhost:5000/account/credit')
+            .subscribe(res => (this.credits = (res as any).extra));
     }
 }
 

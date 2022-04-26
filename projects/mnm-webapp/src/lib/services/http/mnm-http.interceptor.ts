@@ -158,7 +158,6 @@ export class MNMHttpInterceptor implements HttpInterceptor {
                                             errorHandler(e);
                                             return of(e);
                                         }),
-                                        finalize(cleanUpHandler),
                                         switchMap(
                                             (
                                                 newAccessToken:

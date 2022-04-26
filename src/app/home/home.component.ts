@@ -21,7 +21,7 @@ import { HomeService } from './home.service';
     templateUrl: './home.component.html',
 })
 export class HomeComponent {
-    public credits = -1;
+    public data = -1;
 
     public constructor(
         private testService: ModalService,
@@ -31,6 +31,10 @@ export class HomeComponent {
     ) {
         oauthService.userInfo$.pipe(first()).subscribe(x => {
             if (!x.isLoggedIn) return;
+            this.loadData();
+            this.loadData();
+            this.loadData();
+            this.loadData();
         });
     }
 
@@ -53,19 +57,20 @@ export class HomeComponent {
         const password = 'Naruto12!';
         this.oauthService.login(username, password, true).subscribe(res => {
             console.log(res);
-            this.fetchCredits();
+            this.loadData();
         });
     }
 
     public logout() {
         this.oauthService.logout();
-        this.credits = -1;
+        this.data = -1;
     }
 
-    public fetchCredits() {
+    public loadData() {
+        // console.log('Loading data')
         this.httpClient
-            .get('http://localhost:5000/account/credit')
-            .subscribe(res => (this.credits = (res as any).extra));
+            .get('https://jsonplaceholder.typicode.com/todos/1')
+            .subscribe(res => (this.data = (res as any).title));
     }
 }
 

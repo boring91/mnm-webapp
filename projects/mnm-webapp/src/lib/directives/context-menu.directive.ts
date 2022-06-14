@@ -1,15 +1,26 @@
-import { Directive, Output, EventEmitter, HostListener, Input, Renderer2 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import {
+    Directive,
+    Output,
+    EventEmitter,
+    HostListener,
+    Input,
+    Renderer2,
+    Inject,
+} from '@angular/core';
 
 @Directive({
-    selector: '[mnmContextMenu]'
+    selector: '[mnmContextMenu]',
 })
 export class ContextMenuDirective {
-    @Output() menuItemSelected = new EventEmitter<string>();
+    @Output() public menuItemSelected = new EventEmitter<string>();
 
-    @Input('mnmContextMenu') public items: [{
-        id: string;
-        name: string;
-    }]
+    @Input('mnmContextMenu') public items: [
+        {
+            id: string;
+            name: string;
+        }
+    ];
 
     @Input() public onRightClick: boolean = false;
 
@@ -17,15 +28,18 @@ export class ContextMenuDirective {
 
     private hideShownMenu = () => {
         if (this.shownMenu) {
-            this.renderer.removeChild(document.body, this.shownMenu);
+            this.renderer.removeChild(this.document.body, this.shownMenu);
             this.shownMenu = null;
 
             window.removeEventListener('click', this.hideShownMenu);
             window.removeEventListener('scroll', this.hideShownMenu);
         }
-    }
+    };
 
-    constructor(private renderer: Renderer2) { }
+    constructor(
+        private renderer: Renderer2,
+        @Inject(DOCUMENT) private document: Document
+    ) {}
 
     @HostListener('contextmenu', ['$event'])
     public showContextMenuRightClick(event: MouseEvent) {
@@ -42,12 +56,16 @@ export class ContextMenuDirective {
 
     @HostListener('click', ['$event'])
     public showContextMenu(event: TouchEvent | MouseEvent) {
-        let x = undefined, y = undefined;
+        let x = undefined,
+            y = undefined;
 
-        if ((event as TouchEvent).touches && (
-            (event as TouchEvent).touches.length === 1 && !this.onRightClick ||
-            (event as TouchEvent).touches.length === 2 && this.onRightClick
-        )) {
+        if (
+            (event as TouchEvent).touches &&
+            (((event as TouchEvent).touches.length === 1 &&
+                !this.onRightClick) ||
+                ((event as TouchEvent).touches.length === 2 &&
+                    this.onRightClick))
+        ) {
             x = (event as TouchEvent).touches[0].screenX;
             y = (event as TouchEvent).touches[0].screenY;
         } else if (!this.onRightClick) {
@@ -59,18 +77,17 @@ export class ContextMenuDirective {
             event.preventDefault();
             this.buildContextMenu(x, y);
         }
-
     }
 
     private buildContextMenu(x: number, y: number) {
         this.hideShownMenu();
 
-        const pageWidth = document.body.offsetWidth;
-        const pageHeight = document.body.offsetHeight;
+        const pageWidth = this.document.body.offsetWidth;
+        const pageHeight = this.document.body.offsetHeight;
         const threshold = 150;
 
         const menuItems = this.items.map(x => {
-            const button = document.createElement('button');
+            const button = this.document.createElement('button');
             button.innerHTML = x.name;
             button.style.display = 'inline-block';
             button.style.width = '100%';
@@ -80,10 +97,9 @@ export class ContextMenuDirective {
             return button;
         });
 
-
-        this.shownMenu = document.createElement('div');
-        this.shownMenu.style.display = 'flex'
-        this.shownMenu.style.flexDirection = 'flex-column'
+        this.shownMenu = this.document.createElement('div');
+        this.shownMenu.style.display = 'flex';
+        this.shownMenu.style.flexDirection = 'flex-column';
         this.shownMenu.style.position = 'absolute';
 
         if (x + threshold < pageWidth) {
@@ -101,7 +117,7 @@ export class ContextMenuDirective {
         this.shownMenu.append(...menuItems);
 
         this.renderer.addClass(this.shownMenu, 'mnm-context-menu');
-        this.renderer.appendChild(document.body, this.shownMenu);
+        this.renderer.appendChild(this.document.body, this.shownMenu);
 
         setTimeout(() => {
             window.addEventListener('click', this.hideShownMenu);

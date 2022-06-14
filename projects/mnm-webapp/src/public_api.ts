@@ -12,6 +12,7 @@ export * from './lib/services/oauth.service';
 export * from './lib/services/http/mnm-http-interceptor-params';
 export * from './lib/services/http/mnm-http.interceptor';
 export * from './lib/services/modal/modal.service';
+export * from './lib/services/local-storage-accessor.service';
 
 // components
 export * from './lib/components/wizard/wizard.component';

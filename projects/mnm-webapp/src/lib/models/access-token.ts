@@ -8,11 +8,9 @@ export class AccessToken {
     persist: boolean;
     username: string;
 
-    constructor() {
-        const acStr = localStorage.getItem('accessToken');
-
-        if (acStr) {
-            const accessToken: AccessToken = JSON.parse(acStr);
+    public load(accessTokenStr: string | null) {
+        if (accessTokenStr) {
+            const accessToken: AccessToken = JSON.parse(accessTokenStr);
             this.acquiredAt = accessToken.acquiredAt;
             this.refreshToken = accessToken.refreshToken;
             this.expiresIn = accessToken.expiresIn;
@@ -28,7 +26,7 @@ export class AccessToken {
     /**
      * Saves the access token to the cookie
      */
-    save() {
+    public toString(): string {
         // Get a copy of this object.
         const accessToken = JSON.parse(JSON.stringify(this));
 
@@ -36,14 +34,10 @@ export class AccessToken {
         // access token on every reload.
         delete accessToken.value;
 
-        localStorage.setItem('accessToken', JSON.stringify(accessToken));
+        return JSON.stringify(accessToken);
     }
 
-    clear() {
-        // window.localStorage.removeItem('accessToken');
-        // miscFunctions.deleteCookie('accessToken');
-        localStorage.removeItem('accessToken');
-
+    public clear() {
         this.value = undefined;
         this.refreshToken = undefined;
         this.expiresIn = undefined;
@@ -52,11 +46,11 @@ export class AccessToken {
         this.claims = [];
     }
 
-    get isObtained(): boolean {
+    public get isObtained(): boolean {
         return this.expiresIn != null && this.acquiredAt != null;
     }
 
-    get isValid(): boolean {
+    public get isValid(): boolean {
         if (!this.isObtained) {
             return false;
         }

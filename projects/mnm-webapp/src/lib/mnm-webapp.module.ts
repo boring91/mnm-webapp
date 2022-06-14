@@ -21,6 +21,7 @@ import { MnmMainComponent } from './components/main/main.component';
 import { ModalService } from './services/modal/modal.service';
 import { ModalComponent } from './services/modal/components/modal/modal.component';
 import { ModalContainerComponent } from './services/modal/components/modal-container/modal-container.component';
+import { LocalStorageAccessorService } from '../public_api';
 
 @NgModule({
     imports: [
@@ -75,6 +76,7 @@ export class MnmWebappModule {
                 },
                 OauthService,
                 BroadcasterService,
+                LocalStorageAccessorService,
             ],
         };
     }

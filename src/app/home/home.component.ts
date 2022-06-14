@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     Component,
     EventEmitter,
@@ -13,6 +13,7 @@ import {
     LoadingService,
     ModalService,
     OauthService,
+    mnmHttpInterceptorParams,
 } from '../../../projects/mnm-webapp/src/public_api';
 import { HomeService } from './home.service';
 
@@ -38,23 +39,9 @@ export class HomeComponent {
         });
     }
 
-    public async showModal(): Promise<void> {
-        // return;
-        await this.testService.show(TestModalComponent, {
-            moduleRef: this.module,
-            beforeInit: c => {
-                c.input = { value: 'hello' };
-            },
-            size: {
-                width: '30%',
-                height: '90vh',
-            },
-        });
-    }
-
     public login() {
         const username = 'm2008m1033m@gmail.com';
-        const password = 'Naruto12!';
+        const password = 'Onepiece12!';
         this.oauthService.login(username, password, true).subscribe(res => {
             console.log(res);
             this.loadData();
@@ -67,95 +54,12 @@ export class HomeComponent {
     }
 
     public loadData() {
-        // console.log('Loading data')
+        console.log('Loading data');
         this.httpClient
             .get('https://jsonplaceholder.typicode.com/todos/1')
-            .subscribe(res => (this.data = (res as any).title));
+            .subscribe(res => {
+                console.log('data loaded');
+                this.data = (res as any).title;
+            });
     }
-}
-
-@Component({
-    selector: 'app-test-modal',
-    template: `
-        <div>
-            <h5 style="margin: 0">
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-            </h5>
-            <h3>Show another?</h3>
-            <h4>The input is {{ input }}</h4>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-                Lorem ipsum dolor sit amet, consectetur ag elit. Nam sit amet
-                diam dui. Nunc condim Lorem ipsum dolor sit amet, consectetur ag
-                elit. Nam sit amet diam dui. Nunc condim Lorem ipsum dolor sit
-                amet, consectetur ag elit. Nam sit amet diam dui. Nunc condim
-            </p>
-            <button (click)="showModal()">Show another modal?</button>
-            <button class="mr-2" (click)="emit.emit()">Emit an event?</button>
-        </div>
-    `,
-})
-export class TestModalComponent implements OnInit, OnDestroy {
-    @Input() public input: any;
-    @Output() public emit = new EventEmitter();
-
-    public constructor(
-        private testService: ModalService,
-        private homeService: HomeService,
-        private loadingService: LoadingService,
-        private moduleRef: NgModuleRef<any>
-    ) {
-        loadingService.showLoading();
-
-        setTimeout(() => {
-            this.loadingService.hideLoading();
-        }, 3000);
-    }
-
-    public ngOnInit(): void {}
-
-    public showModal(): void {
-        this.testService.show(TestModalComponent, {
-            moduleRef: this.moduleRef,
-            size: {
-                width: '400px',
-            },
-        });
-    }
-
-    public ngOnDestroy(): void {}
 }

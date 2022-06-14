@@ -11,6 +11,7 @@ import { BroadcasterService } from './broadcaster/broadcaster.service';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Result } from '../models/result';
 import { mnmHttpInterceptorParams } from './http/mnm-http-interceptor-params';
+import { LocalStorageAccessorService } from './local-storage-accessor.service';
 
 @Injectable()
 export class OauthService {
@@ -30,6 +31,7 @@ export class OauthService {
         oauthService: OauthService,
         res: any,
         username: string,
+        localStorageAccessor: LocalStorageAccessorService,
         persist?: boolean
     ): AccessToken {
         oauthService.accessToken.value = res['access_token'];
@@ -40,15 +42,25 @@ export class OauthService {
         if (persist !== undefined || persist !== null) {
             oauthService.accessToken.persist = persist;
         }
-        oauthService.accessToken.save();
+
+        localStorageAccessor.storage?.setItem(
+            'accessToken',
+            oauthService.accessToken.toString()
+        );
+
         return oauthService.accessToken;
     }
 
     constructor(
         private http: HttpClient,
+        private localStorageAccessor: LocalStorageAccessorService,
         broadcaster: BroadcasterService,
         @Inject(MNM_CONFIG) config: MNMConfig
     ) {
+        this.accessToken.load(
+            localStorageAccessor.storage?.getItem('accessToken')
+        );
+
         this._auth$.next(this.accessToken);
         if (config) {
             this.oauthUrl = config.oauthConfig.oauthUrl;
@@ -115,7 +127,13 @@ export class OauthService {
             )
             .pipe(
                 switchMap(res => {
-                    OauthService.extractAccessToken(this, res, email, persist);
+                    OauthService.extractAccessToken(
+                        this,
+                        res,
+                        email,
+                        this.localStorageAccessor,
+                        persist
+                    );
 
                     this._status$.next('logged_in');
 
@@ -163,7 +181,8 @@ export class OauthService {
                     const accessToken = OauthService.extractAccessToken(
                         this,
                         res,
-                        this.accessToken.username
+                        this.accessToken.username,
+                        this.localStorageAccessor
                     );
                     this.tokenRefreshedNotifier.next(accessToken);
                     return accessToken;
@@ -186,6 +205,8 @@ export class OauthService {
 
     logout() {
         this.accessToken.clear();
+        this.localStorageAccessor.storage?.removeItem('accessToken');
+
         this._auth$.next(this.accessToken);
         this._status$.next('logged_out');
     }
@@ -229,7 +250,12 @@ export class OauthService {
                     }
                     const extra = res.extra.claims;
                     this.accessToken.claims = extra.map(x => <Claim[]>x);
-                    this.accessToken.save();
+
+                    this.localStorageAccessor.storage?.setItem(
+                        'accessToken',
+                        this.accessToken.toString()
+                    );
+
                     this._auth$.next(this.accessToken);
                 })
             )

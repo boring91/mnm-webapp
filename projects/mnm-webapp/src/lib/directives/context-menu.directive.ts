@@ -25,6 +25,7 @@ export class ContextMenuDirective {
     @Input() public onRightClick: boolean = false;
 
     private shownMenu: HTMLElement = null;
+    private document: Document;
 
     private hideShownMenu = () => {
         if (this.shownMenu) {
@@ -38,8 +39,10 @@ export class ContextMenuDirective {
 
     constructor(
         private renderer: Renderer2,
-        @Inject(DOCUMENT) private document: Document
-    ) {}
+        @Inject(DOCUMENT) document: any
+    ) {
+        this.document = document;
+    }
 
     @HostListener('contextmenu', ['$event'])
     public showContextMenuRightClick(event: MouseEvent) {

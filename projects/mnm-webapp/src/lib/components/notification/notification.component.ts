@@ -127,13 +127,16 @@ export class NotificationComponent implements OnDestroy {
     modals: Modal[] = [];
 
     private readonly _callback: (event: KeyboardEvent) => void;
+    private document: Document;
 
     constructor(
-        @Inject(DOCUMENT) private document: Document,
+        @Inject(DOCUMENT) document: any,
         notificationService: NotificationService,
         @Inject(MNM_NOTIFICATION_HANDLER)
         notificationHandler: NotificationHandler
     ) {
+        this.document = document;
+
         let alertClassName: string;
         if ((notificationHandler as any).alerts$) {
             (

@@ -7,23 +7,36 @@ import {
     ComponentFactoryResolver,
     ElementRef,
     Renderer2,
+    OnDestroy,
+    Inject,
 } from '@angular/core';
 import { ModalService } from '../../modal.service';
 import { ModalOptions } from '../../models/modal-options';
-import { animations } from './animation';
+import { AnimationBuilder, AnimationPlayer } from '@angular/animations';
+import { MNM_CONFIG } from '../../../../config/mnm.config';
+import { MNMConfig } from '../../../../config/mnm-config';
+import { defaultMnmConfig } from '../../../../config/mnm.config.default';
+
+interface ElementPlayers {
+    enter: AnimationPlayer;
+    leave: AnimationPlayer;
+}
 
 @Component({
     selector: 'mnm-modal-container',
     templateUrl: './modal-container.component.html',
     styleUrls: ['./modal-container.component.scss'],
-    animations: animations,
 })
-export class ModalContainerComponent implements AfterViewInit {
+export class ModalContainerComponent implements AfterViewInit, OnDestroy {
     public options: ModalOptions;
 
     // The place where the component will be loaded.
     @ViewChild('modalContentContainer', { read: ViewContainerRef })
     private modalContentContainer: ViewContainerRef;
+
+    // The container div.
+    @ViewChild('overlay')
+    private overlay: ElementRef<HTMLDivElement>;
 
     // The container div.
     @ViewChild('dialog')
@@ -34,13 +47,25 @@ export class ModalContainerComponent implements AfterViewInit {
     private componentLoadingPromiseResolve: (component: any) => void;
     private pendingComponentType: Type<any>;
 
+    private animationPlayers: {
+        overlay: ElementPlayers;
+        dialog: ElementPlayers;
+    } = {
+        overlay: { enter: null, leave: null },
+        dialog: { enter: null, leave: null },
+    };
+
     public constructor(
+        @Inject(MNM_CONFIG) private readonly mnmConfig: MNMConfig,
         private modalService: ModalService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private renderer: Renderer2
+        private renderer: Renderer2,
+        private animationBuilder: AnimationBuilder
     ) {}
 
     public ngAfterViewInit(): void {
+        this.createElementPlayers();
+
         // Set the size of the modal.
         this.renderer.setStyle(
             this.dialog.nativeElement,
@@ -54,11 +79,42 @@ export class ModalContainerComponent implements AfterViewInit {
         );
 
         this.tryLoad();
+
+        this.animationPlayers.overlay.enter.play();
+        this.animationPlayers.dialog.enter.play();
+    }
+
+    public ngOnDestroy(): void {
+        this.animationPlayers.overlay.enter?.destroy();
+        this.animationPlayers.overlay.leave?.destroy();
+        this.animationPlayers.dialog.enter?.destroy();
+        this.animationPlayers.dialog.leave?.destroy();
     }
 
     public dismiss(): void {
-        if (!this.loadedComponent) return;
-        this.modalService.dismiss(this.loadedComponent);
+        if (
+            !this.loadedComponent ||
+            // Prevent double dismissing.
+            this.animationPlayers.overlay.leave.hasStarted() ||
+            this.animationPlayers.dialog.leave.hasStarted()
+        ) {
+            return;
+        }
+
+        // Start the leave animation, and wait for the
+        // longest player to finish before dismissing the dialog.
+        const { overlay, dialog } = this.animationPlayers;
+        const longestPlayer =
+            overlay.leave.totalTime > dialog.leave.totalTime
+                ? overlay.leave
+                : dialog.leave;
+        longestPlayer.onDone(() => {
+            // noinspection JSIgnoredPromiseFromCall
+            this.modalService.dismiss(this.loadedComponent);
+        });
+
+        overlay.leave.play();
+        dialog.leave.play();
     }
 
     public load(component: Type<any>): Promise<any> {
@@ -82,7 +138,9 @@ export class ModalContainerComponent implements AfterViewInit {
     private tryLoad(): void {
         // Ensure that the component has been passed &
         // the container is initialized.
-        if (!this.pendingComponentType || !this.modalContentContainer) return;
+        if (!this.pendingComponentType || !this.modalContentContainer) {
+            return;
+        }
 
         // Clear the container contents.
         this.modalContentContainer.clear();
@@ -118,5 +176,36 @@ export class ModalContainerComponent implements AfterViewInit {
 
         // Nullify the pending component.
         this.pendingComponentType = null;
+    }
+
+    private createElementPlayers() {
+        this.animationPlayers.overlay.enter = this.createPlayer(
+            this.overlay,
+            this.mnmConfig.modal?.animations?.overlayEnterAnimation ??
+                defaultMnmConfig.modal.animations.overlayEnterAnimation
+        );
+        this.animationPlayers.overlay.leave = this.createPlayer(
+            this.overlay,
+            this.mnmConfig.modal?.animations?.overlayLeaveAnimation ??
+                defaultMnmConfig.modal.animations.overlayLeaveAnimation
+        );
+        this.animationPlayers.dialog.enter = this.createPlayer(
+            this.dialog,
+            this.mnmConfig.modal?.animations?.dialogEnterAnimation ??
+                defaultMnmConfig.modal.animations.dialogEnterAnimation
+        );
+        this.animationPlayers.dialog.leave = this.createPlayer(
+            this.dialog,
+            this.mnmConfig.modal?.animations?.dialogLeaveAnimation ??
+                defaultMnmConfig.modal.animations.dialogLeaveAnimation
+        );
+    }
+
+    private createPlayer(
+        elementRef: ElementRef,
+        animationSteps: any[]
+    ): AnimationPlayer {
+        const animation = this.animationBuilder.build(animationSteps);
+        return animation.create(elementRef.nativeElement);
     }
 }

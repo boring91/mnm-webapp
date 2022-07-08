@@ -1,21 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import {
-    Component,
-    EventEmitter,
-    Input,
-    NgModuleRef,
-    OnDestroy,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { first } from 'rxjs/operators';
 import {
-    LoadingService,
     ModalService,
     OauthService,
-    mnmHttpInterceptorParams,
 } from '../../../projects/mnm-webapp/src/public_api';
-import { HomeService } from './home.service';
 
 @Component({
     selector: 'app-home',
@@ -25,13 +14,14 @@ export class HomeComponent {
     public data = -1;
 
     public constructor(
-        private testService: ModalService,
-        private module: NgModuleRef<any>,
+        private modalService: ModalService,
         public oauthService: OauthService,
         public httpClient: HttpClient
     ) {
         oauthService.userInfo$.pipe(first()).subscribe(x => {
-            if (!x.isLoggedIn) return;
+            if (!x.isLoggedIn) {
+                return;
+            }
             this.loadData();
             this.loadData();
             this.loadData();
@@ -61,5 +51,9 @@ export class HomeComponent {
                 console.log('data loaded');
                 this.data = (res as any).title;
             });
+    }
+
+    public showModal(): void {
+        this.modalService.show(HomeComponent);
     }
 }

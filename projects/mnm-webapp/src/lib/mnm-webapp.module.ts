@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { MNMConfig } from './mnm-config';
-import { MNM_CONFIG } from './mnm.config';
+import { MNMConfig } from './config/mnm-config';
+import { MNM_CONFIG } from './config/mnm.config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MNMHttpInterceptor } from './services/http/mnm-http.interceptor';
 import { RouterModule } from '@angular/router';
@@ -21,7 +21,7 @@ import { MnmMainComponent } from './components/main/main.component';
 import { ModalService } from './services/modal/modal.service';
 import { ModalComponent } from './services/modal/components/modal/modal.component';
 import { ModalContainerComponent } from './services/modal/components/modal-container/modal-container.component';
-import { LocalStorageAccessorService } from '../public_api';
+import { LocalStorageAccessorService } from './services/local-storage-accessor.service';
 
 @NgModule({
     imports: [

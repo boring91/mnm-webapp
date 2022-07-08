@@ -1,13 +1,1 @@
-<button *ngIf="!(oauthService.userInfo$ | async).isLoggedIn" (click)="login()">
-    Login
-</button>
-
-<ng-container *ngIf="(oauthService.userInfo$ | async).isLoggedIn">
-    <h3>{{ (oauthService.userInfo$ | async).claims | json }}</h3>
-    <button (click)="logout()">Logout</button>
-
-    <div>
-        <h3>Data</h3>
-        <h4>{{ data }}</h4>
-    </div>
-</ng-container>
+<button (click)="showModal()">Show modal</button>

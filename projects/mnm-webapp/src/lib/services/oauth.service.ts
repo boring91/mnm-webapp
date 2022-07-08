@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
-import { MNM_CONFIG } from '../mnm.config';
-import { MNMConfig } from '../mnm-config';
+import { MNM_CONFIG } from '../config/mnm.config';
+import { MNMConfig } from '../config/mnm-config';
 import { AccessToken } from '../models/access-token';
 import { Claim } from '../models/claim';
 import { miscFunctions } from '../misc/misc-functions';
@@ -39,7 +39,7 @@ export class OauthService {
         oauthService.accessToken.expiresIn = res['expires_in']; // the number of seconds from the time it has bee acquired
         oauthService.accessToken.acquiredAt = Date.now();
         oauthService.accessToken.username = username;
-        if (persist !== undefined || persist !== null) {
+        if (persist !== undefined) {
             oauthService.accessToken.persist = persist;
         }
 
@@ -259,6 +259,6 @@ export class OauthService {
                     this._auth$.next(this.accessToken);
                 })
             )
-            .pipe(switchMap(x => successfulObservable));
+            .pipe(switchMap(_ => successfulObservable));
     }
 }

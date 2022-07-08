@@ -1,14 +1,9 @@
 <div
-    [@overlay]
+    #overlay
     class="mnm-modal-overlay"
     (click)="!options.disableAutoDismiss && dismiss()"
 >
-    <div
-        [@dialog]
-        #dialog
-        class="mnm-modal-dialog"
-        (click)="$event.stopPropagation()"
-    >
+    <div #dialog class="mnm-modal-dialog" (click)="$event.stopPropagation()">
         <div class="mnm-modal-header">
             <div class="mnm-modal-title">{{ options.title }}</div>
             <button

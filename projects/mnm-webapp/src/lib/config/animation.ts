@@ -27,7 +27,7 @@ export const animations = {
             '500ms cubic-bezier(.19,1.33,.46,.98)',
             style({
                 transform:
-                    'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(-50%)',
+                    'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(0)',
             })
         ),
     ],
@@ -35,7 +35,7 @@ export const animations = {
     dialogLeaveAnimation: [
         style({
             transform:
-                'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(-50%)',
+                'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(0)',
         }),
         animate(
             '500ms',

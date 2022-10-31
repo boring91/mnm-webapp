@@ -17,8 +17,8 @@ import { animate, style } from '@angular/animations';
         BrowserAnimationsModule,
         MnmWebappModule.forRoot({
             oauthConfig: {
-                claimsUrl: 'http://localhost:5000/claims',
-                oauthUrl: 'http://localhost:5000',
+                claimsUrl: 'http://localhost:5004/claims',
+                oauthUrl: 'http://localhost:5004',
             },
         }),
         AppRoutingModule,

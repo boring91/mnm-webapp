@@ -26,6 +26,7 @@ import { Result } from '../../models/result';
 import { NavigationStart, Router } from '@angular/router';
 import { mnmHttpInterceptorParams } from './mnm-http-interceptor-params';
 import { AccessToken } from '../../models/access-token';
+import { mnmHttpInterceptorRouterParams } from './mnm-http-interceptor-router-params';
 
 @Injectable()
 export class MNMHttpInterceptor implements HttpInterceptor {
@@ -57,6 +58,17 @@ export class MNMHttpInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
+                const state = this.router.getCurrentNavigation().extras.state;
+
+                // If the navigation is marked to allow current
+                // requests to continue, then skip cancellation.
+                if (
+                    state &&
+                    state[mnmHttpInterceptorRouterParams.resumeRequests]
+                ) {
+                    return;
+                }
+
                 this.cancelRequestSubject$.next();
             }
         });

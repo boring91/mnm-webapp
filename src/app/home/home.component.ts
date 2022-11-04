@@ -13,26 +13,28 @@ import {
     templateUrl: './home.component.html',
 })
 export class HomeComponent {
-    public data = -1;
+    public constructor(private modalService: ModalService) {}
 
-    public constructor(
-        public httpClient: HttpClient,
-        public router: Router,
-        public activatedRoute: ActivatedRoute
-    ) {
-        this.httpClient
-            .get('https://google.com')
-            .subscribe(() => console.log('loading done'));
+    public async show(): Promise<void> {
+        await this.modalService.show(TestComponent);
+    }
+}
 
-        this.router.navigate([], {
-            relativeTo: activatedRoute,
-            queryParams: {
-                hello: 'world',
-            },
-            queryParamsHandling: 'merge',
-            state: {
-                [mnmHttpInterceptorRouterParams.resumeRequests]: true,
-            },
-        });
+@Component({
+    selector: 'app-test',
+    template: `
+        <button (click)="show()">Show modal</button>
+        <button (click)="dismissAll()">Dismiss all</button>
+    `,
+})
+class TestComponent {
+    public constructor(private modalService: ModalService) {}
+
+    public async show(): Promise<void> {
+        await this.modalService.show(TestComponent);
+    }
+
+    public async dismissAll(): Promise<void> {
+        await this.modalService.dismissAll();
     }
 }

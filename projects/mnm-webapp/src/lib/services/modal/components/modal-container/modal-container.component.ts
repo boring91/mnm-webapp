@@ -9,6 +9,8 @@ import {
     Renderer2,
     OnDestroy,
     Inject,
+    Output,
+    EventEmitter,
 } from '@angular/core';
 import { ModalService } from '../../modal.service';
 import { ModalOptions } from '../../models/modal-options';
@@ -16,6 +18,10 @@ import { AnimationBuilder, AnimationPlayer } from '@angular/animations';
 import { MNM_CONFIG } from '../../../../config/mnm.config';
 import { MNMConfig } from '../../../../config/mnm-config';
 import { defaultMnmConfig } from '../../../../config/mnm.config.default';
+import { Subject } from 'rxjs';
+import { ModalBroadcasterMessage } from '../../models/modal-broadcaster-message';
+import { takeUntil } from 'rxjs/operators';
+import { BroadcasterService } from '../../../broadcaster/broadcaster.service';
 
 interface ElementPlayers {
     enter: AnimationPlayer;
@@ -28,6 +34,8 @@ interface ElementPlayers {
     styleUrls: ['./modal-container.component.scss'],
 })
 export class ModalContainerComponent implements AfterViewInit, OnDestroy {
+    @Output() public modalDismiss = new EventEmitter<(c: any) => void>();
+
     public options: ModalOptions;
 
     // The place where the component will be loaded.
@@ -55,13 +63,25 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         dialog: { enter: null, leave: null },
     };
 
+    private unsubscribeAll = new Subject();
+
     public constructor(
         @Inject(MNM_CONFIG) private readonly mnmConfig: MNMConfig,
         private modalService: ModalService,
         private componentFactoryResolver: ComponentFactoryResolver,
         private renderer: Renderer2,
-        private animationBuilder: AnimationBuilder
-    ) {}
+        private animationBuilder: AnimationBuilder,
+        broadcasterService: BroadcasterService
+    ) {
+        broadcasterService
+            .on<ModalBroadcasterMessage>('mnm_modal')
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe(async ({ type, callback }) => {
+                if (type !== 'dismiss') return;
+
+                this.animateForDismissal(callback);
+            });
+    }
 
     public ngAfterViewInit(): void {
         this.createElementPlayers();
@@ -89,32 +109,13 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         this.animationPlayers.overlay.leave?.destroy();
         this.animationPlayers.dialog.enter?.destroy();
         this.animationPlayers.dialog.leave?.destroy();
+
+        this.unsubscribeAll.next();
+        this.unsubscribeAll.complete();
     }
 
-    public dismiss(): void {
-        if (
-            !this.loadedComponent ||
-            // Prevent double dismissing.
-            this.animationPlayers.overlay.leave.hasStarted() ||
-            this.animationPlayers.dialog.leave.hasStarted()
-        ) {
-            return;
-        }
-
-        // Start the leave animation, and wait for the
-        // longest player to finish before dismissing the dialog.
-        const { overlay, dialog } = this.animationPlayers;
-        const longestPlayer =
-            overlay.leave.totalTime > dialog.leave.totalTime
-                ? overlay.leave
-                : dialog.leave;
-        longestPlayer.onDone(() => {
-            // noinspection JSIgnoredPromiseFromCall
-            this.modalService.dismiss(this.loadedComponent);
-        });
-
-        overlay.leave.play();
-        dialog.leave.play();
+    public async dismiss(): Promise<void> {
+        await this.modalService.dismiss(this);
     }
 
     public load(component: Type<any>): Promise<any> {
@@ -207,5 +208,30 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
     ): AnimationPlayer {
         const animation = this.animationBuilder.build(animationSteps);
         return animation.create(elementRef.nativeElement);
+    }
+
+    private animateForDismissal(callback: (c: any) => void): void {
+        if (
+            !this.loadedComponent ||
+            // Prevent double dismissing.
+            this.animationPlayers.overlay.leave.hasStarted() ||
+            this.animationPlayers.dialog.leave.hasStarted()
+        ) {
+            return;
+        }
+
+        // Start the leave animation, and wait for the
+        // longest player to finish before dismissing the dialog.
+        const { overlay, dialog } = this.animationPlayers;
+        const longestPlayer =
+            overlay.leave.totalTime > dialog.leave.totalTime
+                ? overlay.leave
+                : dialog.leave;
+        longestPlayer.onDone(() => {
+            this.modalDismiss.emit(callback);
+        });
+
+        overlay.leave.play();
+        dialog.leave.play();
     }
 }

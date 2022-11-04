@@ -43,14 +43,12 @@ export class ModalComponent implements OnDestroy {
                     callback,
                     options,
                 }) => {
-                    if (type === 'show')
-                        await this.showComponentInModal(
-                            componentType,
-                            options,
-                            callback
-                        );
-                    else if (type === 'dismiss')
-                        this.dismissComponentFromModal(component, callback);
+                    if (type !== 'show') return;
+                    await this.showComponentInModal(
+                        componentType,
+                        options,
+                        callback
+                    );
                 }
             );
     }
@@ -75,6 +73,16 @@ export class ModalComponent implements OnDestroy {
 
         // Pass the options to the container component.
         containerComponent.options = options;
+
+        // Monitor for dismissal events.
+        containerComponent.modalDismiss
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe(dismissalCallback => {
+                this.dismissComponentFromModal(
+                    containerComponent.loadedComponent,
+                    dismissalCallback
+                );
+            });
 
         // Register the container as one of the
         // shown dialogs.

@@ -57,4 +57,17 @@ export class ModalService {
             );
         });
     }
+
+    public dismissAll(): Promise<void> {
+        return new Promise(async resolve => {
+            // We need to copy the array as it
+            // is going to be updated after each
+            // dismiss.
+            const copy = [...this.activeComponents];
+            for (const c of copy) {
+                await this.dismiss(c);
+            }
+            resolve();
+        });
+    }
 }

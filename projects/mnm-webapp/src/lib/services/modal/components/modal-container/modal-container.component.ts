@@ -76,8 +76,9 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         broadcasterService
             .on<ModalBroadcasterMessage>('mnm_modal')
             .pipe(takeUntil(this.unsubscribeAll))
-            .subscribe(async ({ type, callback }) => {
-                if (type !== 'dismiss') return;
+            .subscribe(async ({ type, component, callback }) => {
+                if (type !== 'dismiss' || this.loadedComponent !== component)
+                    return;
 
                 this.animateForDismissal(callback);
             });
@@ -115,7 +116,7 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
     }
 
     public async dismiss(): Promise<void> {
-        await this.modalService.dismiss(this);
+        await this.modalService.dismiss(this.loadedComponent);
     }
 
     public load(component: Type<any>): Promise<any> {

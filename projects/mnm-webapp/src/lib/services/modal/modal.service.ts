@@ -64,7 +64,7 @@ export class ModalService {
             // is going to be updated after each
             // dismiss.
             const copy = [...this.activeComponents];
-            for (const c of copy) {
+            for (const c of copy.reverse()) {
                 await this.dismiss(c);
             }
             resolve();

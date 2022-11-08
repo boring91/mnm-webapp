@@ -6,6 +6,8 @@
     <div #dialog class="mnm-modal-dialog" (click)="$event.stopPropagation()">
         <div class="mnm-modal-header">
             <div class="mnm-modal-title">{{ options.title }}</div>
+
+            <!-- Close button -->
             <button
                 class="mnm-modal-close-button"
                 *ngIf="!options.disableAutoDismiss"

@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoadingService } from './loading.service';
-import { Subscription } from 'rxjs';
 import {
     animate,
     keyframes,
@@ -10,11 +10,15 @@ import {
     transition,
     trigger,
 } from '@angular/animations';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'mnm-loading',
     templateUrl: './loading.component.html',
     styleUrls: ['./loading.component.scss'],
+    standalone: true,
+    imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('spinner', [
             transition('* => *', [
@@ -57,41 +61,29 @@ import {
         ]),
     ],
 })
-export class LoadingComponent implements OnDestroy {
+export class LoadingComponent {
     isLoadingShown = false;
     isBlockingLoadingShown = false;
 
     private blockingLoadingStack = 0;
     private loadingStack = 0;
+    private loadingService = inject(LoadingService);
+    private destroyRef = inject(DestroyRef);
 
-    private readonly subscription: Subscription;
-    private subscriptionBlocking: Subscription;
-
-    public constructor(
-        loadingService: LoadingService,
-        changeDetectorRef: ChangeDetectorRef
-    ) {
-        this.subscription = loadingService.observable$.subscribe(show => {
+    constructor() {
+        this.loadingService.observable$.pipe(
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(show => {
             this.loadingStack = this.loadingStack + (show ? 1 : -1);
             this.isLoadingShown = this.loadingStack > 0;
-            changeDetectorRef.detectChanges();
         });
 
-        this.subscription = loadingService.observableBlocking$.subscribe(
-            show => {
-                this.blockingLoadingStack =
-                    this.blockingLoadingStack + (show ? 1 : -1);
-                this.isBlockingLoadingShown = this.blockingLoadingStack > 0;
-            }
-        );
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-        if (this.subscriptionBlocking) {
-            this.subscriptionBlocking.unsubscribe();
-        }
+        this.loadingService.observableBlocking$.pipe(
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(show => {
+            this.blockingLoadingStack =
+                this.blockingLoadingStack + (show ? 1 : -1);
+            this.isBlockingLoadingShown = this.blockingLoadingStack > 0;
+        });
     }
 }

@@ -13,11 +13,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "dist/mnm-webapp-app",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -32,8 +31,14 @@
             "production": {
               "budgets": [
                 {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ],
               "fileReplacements": [
@@ -42,28 +47,30 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "mnm-webapp-app:build"
-          },
           "configurations": {
             "production": {
               "browserTarget": "mnm-webapp-app:build:production"
+            },
+            "development": {
+              "browserTarget": "mnm-webapp-app:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -75,7 +82,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
@@ -87,18 +94,6 @@
               "src/assets"
             ]
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -107,24 +102,16 @@
       "projectType": "application",
       "architect": {
         "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+          "builder": "@angular-devkit/build-angular:cypress",
           "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "mnm-webapp-app:serve"
+            "cypressConfig": "e2e/cypress.config.js",
+            "devServerTarget": "mnm-webapp-app:serve:development",
+            "testingType": "e2e"
           },
           "configurations": {
             "production": {
               "devServerTarget": "mnm-webapp-app:serve:production"
             }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }
@@ -136,43 +123,31 @@
       "prefix": "mnm",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "projects/mnm-webapp/tsconfig.lib.json",
             "project": "projects/mnm-webapp/ng-package.json"
           },
           "configurations": {
             "production": {
-              "project": "projects/mnm-webapp/ng-package.prod.json",
               "tsConfig": "projects/mnm-webapp/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/mnm-webapp/tsconfig.lib.json"
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/mnm-webapp/src/test.ts",
             "tsConfig": "projects/mnm-webapp/tsconfig.spec.json",
-            "karmaConfig": "projects/mnm-webapp/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/mnm-webapp/tsconfig.lib.json",
-              "projects/mnm-webapp/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "karmaConfig": "projects/mnm-webapp/karma.conf.js",
+            "polyfills": ["zone.js", "zone.js/testing"]
           }
         }
       }
     }
   },
-  "defaultProject": "mnm-webapp-app",
-  "cli": {
-    "analytics": "ec78b348-337b-4624-a16c-dae28f9fb254"
-  }
+  "defaultProject": "mnm-webapp-app"
 }

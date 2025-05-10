@@ -1,4 +1,4 @@
-import {Directive, Output, EventEmitter, Input, SimpleChange, OnInit} from '@angular/core';
+import {Directive, Output, EventEmitter, OnInit} from '@angular/core';
 
 @Directive({
   selector: '[mnmOnCreate]'

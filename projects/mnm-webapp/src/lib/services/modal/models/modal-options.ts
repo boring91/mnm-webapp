@@ -1,4 +1,4 @@
-import { Injector, NgModuleRef } from '@angular/core';
+import { NgModuleRef } from '@angular/core';
 
 export interface ModalOptions<T = any> {
     disableAutoDismiss?: boolean;

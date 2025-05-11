@@ -1,13 +1,16 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { WizardComponent, LoadingService, NotificationService } from '../../../projects/mnm-webapp/src/public_api';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-notification',
-  templateUrl: './notification.component.html'
+  templateUrl: './notification.component.html',
+  standalone: true,
+  imports: [CommonModule]
 })
 export class NotificationComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('wizard', { static: true }) wizard: WizardComponent;
+  @ViewChild('wizard') wizard: WizardComponent;
 
   title = 'mnm-webapp-app';
 
@@ -54,17 +57,17 @@ export class NotificationComponent implements OnInit, AfterViewInit {
   }
 
   giveMeModal() {
-    this._notificationService.modal('hello', 'this is the message', number => {
+    this._notificationService.modal('hello', 'this is the message', () => {
     }, 'Yes', 'No');
   }
 
   giveMePrompt() {
-    this._notificationService.prompt('hello', 'promp here', 'okay', 'cancel', string => {
+    this._notificationService.prompt('hello', 'promp here', 'okay', 'cancel', () => {
     });
   }
 
   giveMeList() {
-    this._notificationService.selectList('hello', number => {
+    this._notificationService.selectList('hello', () => {
     }, 'list item 1', 'list item 2', 'list item 3');
   }
 }

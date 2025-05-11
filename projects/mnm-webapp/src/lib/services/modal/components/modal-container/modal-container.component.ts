@@ -4,23 +4,23 @@ import {
     Type,
     ViewChild,
     ViewContainerRef,
-    ComponentFactoryResolver,
     ElementRef,
     Renderer2,
     OnDestroy,
-    Inject,
     Output,
     EventEmitter,
+    inject,
+    DestroyRef,
+    ChangeDetectionStrategy,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModalService } from '../../modal.service';
 import { ModalOptions } from '../../models/modal-options';
 import { AnimationBuilder, AnimationPlayer } from '@angular/animations';
 import { MNM_CONFIG } from '../../../../config/mnm.config';
 import { MNMConfig } from '../../../../config/mnm-config';
 import { defaultMnmConfig } from '../../../../config/mnm.config.default';
-import { Subject } from 'rxjs';
 import { ModalBroadcasterMessage } from '../../models/modal-broadcaster-message';
-import { takeUntil } from 'rxjs/operators';
 import { BroadcasterService } from '../../../broadcaster/broadcaster.service';
 
 interface ElementPlayers {
@@ -29,9 +29,12 @@ interface ElementPlayers {
 }
 
 @Component({
-    selector: 'mnm-modal-container',
+    selector: 'mnm-modal',
     templateUrl: './modal-container.component.html',
     styleUrls: ['./modal-container.component.scss'],
+    standalone: true,
+    imports: [],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalContainerComponent implements AfterViewInit, OnDestroy {
     @Output() public modalDismiss = new EventEmitter<(c: any) => void>();
@@ -63,19 +66,17 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         dialog: { enter: null, leave: null },
     };
 
-    private unsubscribeAll = new Subject();
+    private readonly mnmConfig = inject<MNMConfig>(MNM_CONFIG);
+    private modalService = inject(ModalService);
+    private renderer = inject(Renderer2);
+    private animationBuilder = inject(AnimationBuilder);
+    private broadcasterService = inject(BroadcasterService);
+    private destroyRef = inject(DestroyRef);
 
-    public constructor(
-        @Inject(MNM_CONFIG) private readonly mnmConfig: MNMConfig,
-        private modalService: ModalService,
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private renderer: Renderer2,
-        private animationBuilder: AnimationBuilder,
-        broadcasterService: BroadcasterService
-    ) {
-        broadcasterService
+    constructor() {
+        this.broadcasterService
             .on<ModalBroadcasterMessage>('mnm_modal')
-            .pipe(takeUntil(this.unsubscribeAll))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(async ({ type, component, callback }) => {
                 if (type !== 'dismiss' || this.loadedComponent !== component)
                     return;
@@ -110,9 +111,6 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         this.animationPlayers.overlay.leave?.destroy();
         this.animationPlayers.dialog.enter?.destroy();
         this.animationPlayers.dialog.leave?.destroy();
-
-        this.unsubscribeAll.next();
-        this.unsubscribeAll.complete();
     }
 
     public async dismiss(): Promise<void> {
@@ -147,17 +145,12 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         // Clear the container contents.
         this.modalContentContainer.clear();
 
-        // Load the component into the container.
-        const factory = this.componentFactoryResolver.resolveComponentFactory(
-            this.pendingComponentType
-        );
-
+        // Load the component into the container using the modern approach.
         const ref = this.modalContentContainer.createComponent(
-            factory,
-            undefined,
-            undefined,
-            undefined,
-            this.options.moduleRef
+            this.pendingComponentType,
+            {
+                environmentInjector: this.options.moduleRef?.injector
+            }
         );
 
         // Set the loaded component and resolve

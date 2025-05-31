@@ -8,13 +8,14 @@
             <div class="mnm-modal-title">{{ options.title }}</div>
 
             <!-- Close button -->
-            <button
-                class="mnm-modal-close-button"
-                *ngIf="!options.disableAutoDismiss"
-                (click)="dismiss()"
-            >
-                &times;
-            </button>
+            @if (!options.disableAutoDismiss) {
+                <button
+                    class="mnm-modal-close-button"
+                    (click)="dismiss()"
+                >
+                    &times;
+                </button>
+            }
         </div>
         <div class="mnm-modal-container">
             <div #modalContentContainer></div>

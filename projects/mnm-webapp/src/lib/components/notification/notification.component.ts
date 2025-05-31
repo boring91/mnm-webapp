@@ -1,11 +1,12 @@
 import {
     Component,
-    NgZone,
     OnDestroy,
-    Renderer2,
     Input,
-    Inject,
+    DestroyRef,
+    inject,
+    signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from './notification.service';
 import { NotificationType } from './notification-type';
 import {
@@ -26,11 +27,14 @@ import {
     MNM_NOTIFICATION_HANDLER,
 } from './notification-handler';
 import { DOCUMENT } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'mnm-notification',
     templateUrl: './notification.component.html',
     styleUrls: ['./notification.component.scss'],
+    standalone: true,
+    imports: [FormsModule],
     animations: [
         trigger('listAnimation', [
             transition('* => *', [
@@ -109,39 +113,28 @@ export class NotificationComponent implements OnDestroy {
     /**
      * For the alert
      */
-    // @ViewChild('alert') alert;
-    // alertMessage = '';
-    alerts: Alert[] = [];
+    // Using signals for reactive state management
+    alerts = signal<Alert[]>([]);
 
     /**
      * For the modal
      */
-    // @ViewChild('modal') modal;
-    // modalTitle = '';
-    // modalMessage = '';
-    // modalButtons = [];
-    // modalCallback = null;
-    // promptPlaceholder = '';
-    // type = '';
-    // promptText = '';
-    modals: Modal[] = [];
+    modals = signal<Modal[]>([]);
 
     private readonly _callback: (event: KeyboardEvent) => void;
-    private document: Document;
+    private document: Document = inject(DOCUMENT);
+    private destroyRef = inject(DestroyRef);
+    private notificationService = inject(NotificationService);
+    private notificationHandler = inject<NotificationHandler>(MNM_NOTIFICATION_HANDLER);
 
-    constructor(
-        @Inject(DOCUMENT) document: any,
-        notificationService: NotificationService,
-        @Inject(MNM_NOTIFICATION_HANDLER)
-        notificationHandler: NotificationHandler
-    ) {
-        this.document = document;
-
+    constructor() {
         let alertClassName: string;
-        if ((notificationHandler as any).alerts$) {
+        if ((this.notificationHandler as any).alerts$) {
             (
-                notificationHandler as DefaultNotificationHandler
-            ).alerts$.subscribe(x => {
+                this.notificationHandler as DefaultNotificationHandler
+            ).alerts$.pipe(
+                takeUntilDestroyed(this.destroyRef)
+            ).subscribe(x => {
                 switch (x.type) {
                     case NotificationType.Success:
                         alertClassName = 'is-success';
@@ -156,28 +149,19 @@ export class NotificationComponent implements OnDestroy {
                         alertClassName = 'is-danger';
                         break;
                 }
-                // this.alertMessage = x.message;
-                // renderer.setElementClass(this.alert.nativeElement, 'is-active', true);
-                // setTimeout(() => {
-                //   this.dismissAlert();
-                // }, 5000);
                 const alert = {
                     id: miscFunctions.uuid(),
                     text: x.message,
                     className: alertClassName,
                 };
-                this.alerts.push(alert);
+                this.alerts.update(alerts => [...alerts, alert]);
                 this.setAlertTimer(alert);
             });
         }
 
-        notificationService.modals$.subscribe(x => {
-            // this.modalButtons = [];
-            // this.modalTitle = x.title;
-            // this.modalMessage = x.message;
-            // this.modalCallback = x.callback;
-            // this.promptPlaceholder = x.placeholder;
-
+        this.notificationService.modals$.pipe(
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(x => {
             const modal: Modal = {
                 id: miscFunctions.uuid(),
                 title: x.title,
@@ -189,55 +173,45 @@ export class NotificationComponent implements OnDestroy {
                 case NotificationType.Modal:
                     modal.type = 'modal';
                     modal.buttons = x.buttons;
-                    // this.type = 'modal';
-                    // this.modalButtons = x.buttons;
                     break;
                 case NotificationType.Prompt:
-                    // this.type = 'prompt';
-                    // this.promptPlaceholder = x.placeholder;
-                    // this.promptText = x.defaultText;
-                    // this.modalButtons.push(x.positive);
-                    // this.modalButtons.push(x.negative);
                     modal.type = 'prompt';
                     modal.promptPlaceholder = x.placeholder;
                     modal.promptText = x.defaultText;
                     modal.buttons = [x.positive, x.negative];
                     break;
                 case NotificationType.List:
-                    // this.type = 'list';
-                    // this.modalButtons = x.buttons;
                     modal.type = 'list';
                     modal.buttons = x.buttons;
                     break;
             }
 
-            // this.ngZone.runOutsideAngular(() => {
-            //   this.renderer.setElementClass(this.modal.nativeElement, 'is-active', true);
-            // });
-            this.modals.push(modal);
+            this.modals.update(modals => [...modals, modal]);
         });
 
         this._callback = (event: KeyboardEvent) => {
             if (event.keyCode === 27) {
-                this.modals.pop();
+                this.modals.update(modals => {
+                    const newModals = [...modals];
+                    newModals.pop();
+                    return newModals;
+                });
             }
         };
         this.document.addEventListener('keyup', this._callback);
+
+        this.destroyRef.onDestroy(() => {
+            this.document.removeEventListener('keyup', this._callback);
+        });
     }
 
     ngOnDestroy() {
-        this.document.removeEventListener('keyup', this._callback);
+        // Cleanup is handled by destroyRef.onDestroy
     }
 
     dismissAlert(alertId: string) {
-        // this.ngZone.runOutsideAngular(() => {
-        //   this.renderer.setElementClass(this.alert.nativeElement, 'is-success', false);
-        //   this.renderer.setElementClass(this.alert.nativeElement, 'is-info', false);
-        //   this.renderer.setElementClass(this.alert.nativeElement, 'is-warning', false);
-        //   this.renderer.setElementClass(this.alert.nativeElement, 'is-danger', false);
-        //   this.renderer.setElementClass(this.alert.nativeElement, 'is-active', false);
-        // });
-        this.alerts = this.alerts.filter(a => a.id !== alertId);
+        // Using signal update method for immutable updates
+        this.alerts.update(alerts => alerts.filter(a => a.id !== alertId));
     }
 
     setAlertTimer(alert: Alert) {
@@ -248,7 +222,7 @@ export class NotificationComponent implements OnDestroy {
         clearTimeout(alert.timerId);
     }
 
-    submitModal(modal: Modal, which) {
+    submitModal(modal: Modal, which: number) {
         modal.callback(which);
         this.dismissModal(modal);
     }
@@ -265,6 +239,6 @@ export class NotificationComponent implements OnDestroy {
     }
 
     dismissModal(modal: Modal) {
-        this.modals = this.modals.filter(m => m.id !== modal.id);
+        this.modals.update(modals => modals.filter(m => m.id !== modal.id));
     }
 }

@@ -1,86 +1,95 @@
-<div class="mnm-alerts-container" [@listAnimation]="alerts.length">
-  <div
-    *ngFor="let alrt of alerts"
-    class="is-active mnm-notification {{ alrt.className }}"
-    (mouseenter)="removeAlertTimer(alrt)"
-    (mouseleave)="setAlertTimer(alrt)"
-  >
-    <button (click)="dismissAlert(alrt.id)" class="mnm-remove">&times;</button>
-    {{ alrt.text }}
-  </div>
+<div class="mnm-alerts-container" [@listAnimation]="alerts().length">
+  @for (alert of alerts(); track alert.id) {
+    <div
+      class="is-active mnm-notification {{ alert.className }}"
+      (mouseenter)="removeAlertTimer(alert)"
+      (mouseleave)="setAlertTimer(alert)"
+    >
+      <button (click)="dismissAlert(alert.id)" class="mnm-remove">&times;</button>
+      {{ alert.text }}
+    </div>
+  }
 </div>
 
-<div [@modalAnimation]="modals.length">
-  <div *ngFor="let modal of modals" class="mnm-modal">
-    <div class="mnm-overlay" (click)="dismissModal(modal)"></div>
-    <div class="mnm-card">
-      <header class="mnm-head">
-        <p class="mnm-title">{{ modal.title }}</p>
-        <button (click)="dismissModal(modal)" class="mnm-remove"></button>
-      </header>
+<div [@modalAnimation]="modals().length">
+  @for (modal of modals(); track modal.id) {
+    <div class="mnm-modal">
+      <div class="mnm-overlay" (click)="dismissModal(modal)"></div>
+      <div class="mnm-card">
+        <header class="mnm-head">
+          <p class="mnm-title">{{ modal.title }}</p>
+          <button (click)="dismissModal(modal)" class="mnm-remove"></button>
+        </header>
 
-      <!--MODAL-->
-      <ng-container *ngIf="modal.type === 'modal'">
-        <section class="mnm-body">
-          <p>{{ modal.message }}</p>
-        </section>
-        <footer class="mnm-foot">
-          <button
-            *ngFor="let button of modal.buttons; let i = index"
-            class="mnm-button {{ modalPrimaryButtonClasses }}"
-            (click)="submitModal(modal, i)"
-          >
-            {{ button }}
-          </button>
-        </footer>
-      </ng-container>
+        @defer {
+          <!--MODAL-->
+          @if (modal.type === 'modal') {
+            <section class="mnm-body">
+              <p>{{ modal.message }}</p>
+            </section>
+            <footer class="mnm-foot">
+              @for (button of modal.buttons; track $index; let i = $index) {
+                <button
+                  class="mnm-button {{ modalPrimaryButtonClasses }}"
+                  (click)="submitModal(modal, i)"
+                >
+                  {{ button }}
+                </button>
+              }
+            </footer>
+          }
 
-      <!--PROMPT-->
-      <ng-container *ngIf="modal.type === 'prompt'">
-        <section class="mnm-body">
-          <div class="mnm-field">
-            <label class="mnm-label">{{ modal.message }}</label>
-            <p class="mnm-control">
-              <textarea
-                (keyup)="submitPromptIfEnter(modal, $event)"
-                class="mnm-input"
-                type="text"
-                placeholder="{{ modal.promptPlaceholder }}"
-                [(ngModel)]="modal.promptText"
-              ></textarea>
-            </p>
-          </div>
-        </section>
-        <footer class="mnm-foot">
-          <button
-            (click)="submitPrompt(modal)"
-            class="mnm-button {{ modalPrimaryButtonClasses }} is-success"
-          >
-            {{ modal.buttons[0] }}
-          </button>
-          <button
-            (click)="dismissModal(modal)"
-            class="mnm-button {{ modalSecondaryButtonClasses }}"
-          >
-            {{ modal.buttons[1] }}
-          </button>
-        </footer>
-      </ng-container>
+          <!--PROMPT-->
+          @if (modal.type === 'prompt') {
+            <section class="mnm-body">
+              <div class="mnm-field">
+                <label class="mnm-label">{{ modal.message }}</label>
+                <p class="mnm-control">
+                  <textarea
+                    (keyup)="submitPromptIfEnter(modal, $event)"
+                    class="mnm-input"
+                    type="text"
+                    placeholder="{{ modal.promptPlaceholder }}"
+                    [(ngModel)]="modal.promptText"
+                  ></textarea>
+                </p>
+              </div>
+            </section>
+            <footer class="mnm-foot">
+              <button
+                (click)="submitPrompt(modal)"
+                class="mnm-button {{ modalPrimaryButtonClasses }} is-success"
+              >
+                {{ modal.buttons[0] }}
+              </button>
+              <button
+                (click)="dismissModal(modal)"
+                class="mnm-button {{ modalSecondaryButtonClasses }}"
+              >
+                {{ modal.buttons[1] }}
+              </button>
+            </footer>
+          }
 
-      <!--LIST-->
-      <ng-container *ngIf="modal.type === 'list'">
-        <section class="mnm-body">
-          <button
-            style="margin-top: 4px;"
-            *ngFor="let button of modal.buttons; let idx = index"
-            class="mnm-button {{ modalPrimaryButtonClasses }}"
-            (click)="submitModal(modal, idx)"
-          >
-            {{ button }}
-          </button>
-        </section>
-        <footer class="mnm-foot"></footer>
-      </ng-container>
+          <!--LIST-->
+          @if (modal.type === 'list') {
+            <section class="mnm-body">
+              @for (button of modal.buttons; track $index; let idx = $index) {
+                <button
+                  style="margin-top: 4px;"
+                  class="mnm-button {{ modalPrimaryButtonClasses }}"
+                  (click)="submitModal(modal, idx)"
+                >
+                  {{ button }}
+                </button>
+              }
+            </section>
+            <footer class="mnm-foot"></footer>
+          }
+        } @loading {
+          <div class="mnm-loading">Loading modal content...</div>
+        }
+      </div>
     </div>
-  </div>
+  }
 </div>

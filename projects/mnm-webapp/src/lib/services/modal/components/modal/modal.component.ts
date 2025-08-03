@@ -54,7 +54,7 @@ export class ModalComponent implements OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.unsubscribeAll.next();
+        this.unsubscribeAll.next(null);
         this.unsubscribeAll.complete();
     }
 

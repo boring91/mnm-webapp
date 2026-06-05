@@ -69,7 +69,7 @@ export class MNMHttpInterceptor implements HttpInterceptor {
                     return;
                 }
 
-                this.cancelRequestSubject$.next();
+                this.cancelRequestSubject$.next(null);
             }
         });
 

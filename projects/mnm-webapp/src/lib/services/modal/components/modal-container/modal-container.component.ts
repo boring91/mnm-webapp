@@ -92,12 +92,12 @@ export class ModalContainerComponent implements AfterViewInit, OnDestroy {
         this.renderer.setStyle(
             this.dialog.nativeElement,
             'width',
-            this.options.size?.width ?? '700px'
+            this.options?.size?.width ?? '700px'
         );
         this.renderer.setStyle(
             this.dialog.nativeElement,
             'height',
-            this.options.size?.height ?? 'auto'
+            this.options?.size?.height ?? 'auto'
         );
 
         this.tryLoad();

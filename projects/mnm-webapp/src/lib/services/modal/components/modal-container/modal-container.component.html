@@ -1,14 +1,14 @@
 <div
     #overlay
     class="mnm-modal-overlay"
-    (click)="!options.disableAutoDismiss && dismiss()"
+    (click)="!options?.disableAutoDismiss && dismiss()"
 >
     <div #dialog class="mnm-modal-dialog" (click)="$event.stopPropagation()">
         <div class="mnm-modal-header">
-            <div class="mnm-modal-title">{{ options.title }}</div>
+            <div class="mnm-modal-title">{{ options?.title ?? '' }}</div>
 
             <!-- Close button -->
-            @if (!options.disableAutoDismiss) {
+            @if (!options?.disableAutoDismiss) {
                 <button
                     class="mnm-modal-close-button"
                     (click)="dismiss()"

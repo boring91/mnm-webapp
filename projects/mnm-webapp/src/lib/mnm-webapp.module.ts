@@ -29,19 +29,19 @@ import { LocalStorageAccessorService } from './services/local-storage-accessor.s
         FormsModule,
         RouterModule,
         // HttpClientModule
+        NotificationComponent,
+        LoadingComponent,
+        MnmMainComponent,
+        ModalContainerComponent,
     ],
     declarations: [
         // Will be exported
-        NotificationComponent,
-        LoadingComponent,
         WizardComponent,
-        MnmMainComponent,
         OnCreateDirective,
         ContextMenuDirective,
 
         // Used internally
         ModalComponent,
-        ModalContainerComponent,
     ],
     exports: [
         NotificationComponent,

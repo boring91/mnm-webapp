@@ -58,7 +58,7 @@ export class MNMHttpInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         this.router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
-                const state = this.router.getCurrentNavigation().extras.state;
+                const state = this.router.currentNavigation()?.extras.state;
 
                 // If the navigation is marked to allow current
                 // requests to continue, then skip cancellation.

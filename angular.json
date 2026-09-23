@@ -82,25 +82,6 @@
         }
       }
     },
-    "mnm-webapp-app-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:cypress",
-          "options": {
-            "cypressConfig": "e2e/cypress.config.js",
-            "devServerTarget": "mnm-webapp-app:serve:development",
-            "testingType": "e2e"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "mnm-webapp-app:serve:production"
-            }
-          }
-        }
-      }
-    },
     "mnm-webapp": {
       "root": "projects/mnm-webapp",
       "sourceRoot": "projects/mnm-webapp/src",

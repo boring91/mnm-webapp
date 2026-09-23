@@ -14,14 +14,6 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Cypress](https://www.cypress.io/).
-
 ## Library
 
 The project includes a library called `mnm-webapp` which can be built with `ng build mnm-webapp`.
@@ -49,7 +41,6 @@ The project was updated from Angular 10.2.1 to Angular 17.0.0 with the following
 - Updated TypeScript to version 5.4.3
 - Converted components to standalone components
 - Updated the build configuration to use the new Angular CLI format
-- Replaced Protractor with Cypress for end-to-end testing
 - Removed deprecated APIs and patterns
 
 Further enhancements were made to leverage Angular 17's latest features:

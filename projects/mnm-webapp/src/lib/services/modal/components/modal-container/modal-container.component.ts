@@ -15,7 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModalService } from '../../modal.service';
 import { ModalOptions } from '../../models/modal-options';
 import { MNM_CONFIG } from '../../../../config/mnm.config';
-import { MNMConfig, MnmAnimation } from '../../../../config/mnm-config';
+import { MNMConfig, MnmAnimation, ModalAnimations } from '../../../../config/mnm-config';
 import { defaultMnmConfig } from '../../../../config/mnm.config.default';
 import { ModalBroadcasterMessage } from '../../models/modal-broadcaster-message';
 import { BroadcasterService } from '../../../broadcaster/broadcaster.service';
@@ -48,10 +48,9 @@ export class ModalContainerComponent implements AfterViewInit {
     private pendingComponentType: Type<any>;
     private isLeaving = false;
 
-    private readonly animations = {
-        ...defaultMnmConfig.modal.animations,
-        ...inject<MNMConfig>(MNM_CONFIG)?.modal?.animations,
-    };
+    private readonly animations = this.resolveAnimations(
+        inject<MNMConfig>(MNM_CONFIG)?.modal?.animations
+    );
     private modalService = inject(ModalService);
     private broadcasterService = inject(BroadcasterService);
     private destroyRef = inject(DestroyRef);
@@ -71,8 +70,8 @@ export class ModalContainerComponent implements AfterViewInit {
     public ngAfterViewInit(): void {
         this.tryLoad();
 
-        this.play(this.overlay, this.animations.overlayEnterAnimation);
-        this.play(this.dialog, this.animations.dialogEnterAnimation);
+        this.play(this.overlay, this.animations.overlayEnterAnimation, 'backwards');
+        this.play(this.dialog, this.animations.dialogEnterAnimation, 'backwards');
     }
 
     public async dismiss(): Promise<void> {
@@ -128,14 +127,32 @@ export class ModalContainerComponent implements AfterViewInit {
         this.pendingComponentType = null;
     }
 
+    private resolveAnimations(
+        overrides: Partial<ModalAnimations> = {}
+    ): ModalAnimations {
+        const defaults = defaultMnmConfig.modal.animations;
+        return {
+            overlayEnterAnimation:
+                overrides.overlayEnterAnimation ?? defaults.overlayEnterAnimation,
+            overlayLeaveAnimation:
+                overrides.overlayLeaveAnimation ?? defaults.overlayLeaveAnimation,
+            dialogEnterAnimation:
+                overrides.dialogEnterAnimation ?? defaults.dialogEnterAnimation,
+            dialogLeaveAnimation:
+                overrides.dialogLeaveAnimation ?? defaults.dialogLeaveAnimation,
+        };
+    }
+
+    // Enter animations release their styles when done so the dialog keeps no
+    // transform (a transform would become the containing block of fixed
+    // descendants). Leave animations hold their last frame until removal.
     private play(
         element: ElementRef<HTMLElement>,
-        { keyframes, options }: MnmAnimation
-    ): Animation {
-        return element.nativeElement.animate(keyframes, {
-            fill: 'both',
-            ...options,
-        });
+        { keyframes, options }: MnmAnimation,
+        fill: FillMode
+    ): Animation | undefined {
+        // Environments without the Web Animations API (e.g. jsdom) skip animating.
+        return element.nativeElement.animate?.(keyframes, { fill, ...options });
     }
 
     private animateForDismissal(callback: (c: any) => void): void {
@@ -145,12 +162,13 @@ export class ModalContainerComponent implements AfterViewInit {
         }
         this.isLeaving = true;
 
-        // Wait for both leave animations before removing the dialog.
-        Promise.all([
-            this.play(this.overlay, this.animations.overlayLeaveAnimation)
-                .finished,
-            this.play(this.dialog, this.animations.dialogLeaveAnimation)
-                .finished,
+        // Wait for both leave animations (finished or cancelled) before
+        // removing the dialog.
+        Promise.allSettled([
+            this.play(this.overlay, this.animations.overlayLeaveAnimation, 'both')
+                ?.finished,
+            this.play(this.dialog, this.animations.dialogLeaveAnimation, 'both')
+                ?.finished,
         ]).then(() => this.modalDismiss.emit(callback));
     }
 }

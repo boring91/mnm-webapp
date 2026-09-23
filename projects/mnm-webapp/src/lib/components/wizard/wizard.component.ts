@@ -4,6 +4,7 @@ import { animate, keyframes, query, stagger, style, transition, trigger } from '
 @Component({
   selector: 'mnm-wizard',
   templateUrl: './wizard.component.html',
+  standalone: false,
   styleUrls: ['./wizard.component.scss'],
   animations: [
     trigger('wizardAnimation', [

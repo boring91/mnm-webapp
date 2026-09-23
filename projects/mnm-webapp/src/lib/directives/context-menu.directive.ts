@@ -11,6 +11,7 @@ import {
 
 @Directive({
     selector: '[mnmContextMenu]',
+    standalone: false,
 })
 export class ContextMenuDirective {
     @Output() public menuItemSelected = new EventEmitter<string>();

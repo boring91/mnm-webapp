@@ -1,14 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
-    "downlevelIteration": true,
     "importHelpers": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es2022",
@@ -28,11 +26,14 @@
       "dom.iterable"
     ],
     "paths": {
+      "projects/*": [
+        "./projects/*"
+      ],
       "mnm-webapp": [
-        "dist/mnm-webapp"
+        "./dist/mnm-webapp"
       ],
       "mnm-webapp/*": [
-        "dist/mnm-webapp/*"
+        "./dist/mnm-webapp/*"
       ]
     }
   },

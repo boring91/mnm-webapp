@@ -1,7 +1,8 @@
 import {Directive, Output, EventEmitter, OnInit} from '@angular/core';
 
 @Directive({
-  selector: '[mnmOnCreate]'
+  selector: '[mnmOnCreate]',
+  standalone: false,
 })
 export class OnCreateDirective implements OnInit {
 

@@ -38,5 +38,10 @@ export * from './lib/models/user-info';
 export * from './lib/misc/misc-functions';
 export * from './lib/misc/custom-validators';
 
+// config
+export * from './lib/config/mnm-config';
+export * from './lib/config/mnm.config';
+export * from './lib/config/mnm.config.default';
+
 // module
 export * from './lib/mnm-webapp.module';

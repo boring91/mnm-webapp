@@ -19,8 +19,6 @@ import { DefaultNotificationHandler } from './components/notification/default.no
 import { MNM_NOTIFICATION_HANDLER } from './components/notification/notification-handler';
 import { MnmMainComponent } from './components/main/main.component';
 import { ModalService } from './services/modal/modal.service';
-import { ModalComponent } from './services/modal/components/modal/modal.component';
-import { ModalContainerComponent } from './services/modal/components/modal-container/modal-container.component';
 import { LocalStorageAccessorService } from './services/local-storage-accessor.service';
 
 @NgModule({
@@ -32,17 +30,8 @@ import { LocalStorageAccessorService } from './services/local-storage-accessor.s
         NotificationComponent,
         LoadingComponent,
         MnmMainComponent,
-        ModalContainerComponent,
     ],
-    declarations: [
-        // Will be exported
-        WizardComponent,
-        OnCreateDirective,
-        ContextMenuDirective,
-
-        // Used internally
-        ModalComponent,
-    ],
+    declarations: [WizardComponent, OnCreateDirective, ContextMenuDirective],
     exports: [
         NotificationComponent,
         LoadingComponent,

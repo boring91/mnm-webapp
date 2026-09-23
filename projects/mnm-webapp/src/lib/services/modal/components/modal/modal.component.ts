@@ -1,6 +1,5 @@
 import {
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     Type,
     ViewChild,
@@ -16,6 +15,7 @@ import { ModalOptions } from '../../models/modal-options';
 @Component({
     selector: 'mnm-modal',
     template: `<div #container></div>`,
+    standalone: true,
 })
 export class ModalComponent implements OnDestroy {
     @ViewChild('container', { read: ViewContainerRef })
@@ -28,10 +28,7 @@ export class ModalComponent implements OnDestroy {
         onDismiss?: () => void;
     }[] = [];
 
-    public constructor(
-        private componentFactoryResolver: ComponentFactoryResolver,
-        broadcasterService: BroadcasterService
-    ) {
+    public constructor(broadcasterService: BroadcasterService) {
         broadcasterService
             .on<ModalBroadcasterMessage>('mnm_modal')
             .pipe(takeUntil(this.unsubscribeAll))
@@ -65,10 +62,7 @@ export class ModalComponent implements OnDestroy {
     ): Promise<any> {
         // Create a component for the container of the contents.
         // of the modal (the content is a custom component)
-        const factory = this.componentFactoryResolver.resolveComponentFactory(
-            ModalContainerComponent
-        );
-        const ref = this.container.createComponent(factory);
+        const ref = this.container.createComponent(ModalContainerComponent);
         const containerComponent = ref.instance;
 
         // Pass the options to the container component.

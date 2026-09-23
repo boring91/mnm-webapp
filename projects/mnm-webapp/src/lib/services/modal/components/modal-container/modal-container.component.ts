@@ -29,7 +29,7 @@ interface ElementPlayers {
 }
 
 @Component({
-    selector: 'mnm-modal',
+    selector: 'mnm-modal-container',
     templateUrl: './modal-container.component.html',
     styleUrls: ['./modal-container.component.scss'],
     standalone: true,

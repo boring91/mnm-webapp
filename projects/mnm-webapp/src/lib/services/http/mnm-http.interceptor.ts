@@ -99,13 +99,27 @@ export class MNMHttpInterceptor implements HttpInterceptor {
         // prepare the handlers:
         const successHandler = () => {};
 
-        const errorHandler = (res: HttpErrorResponse) => {
+        const errorHandler = async (res: HttpErrorResponse) => {
             if (isStealth || areNotificationsHidden) {
                 return;
             }
-            if (res.error && res.error.messages && !areNotificationsHidden) {
+            if (!res.error) {
+                this.notificationService.notifyError(res.message);
+            } else if (req.responseType === 'blob') {
+                // Blob requests receive the error body as a Blob; read it
+                // to surface the backend's message instead of the status text.
+                const errorText = await res.error.text();
+                try {
+                    const parsedError = JSON.parse(errorText);
+                    this.notificationService.notifyError(
+                        parsedError['messages'][0]
+                    );
+                } catch {
+                    this.notificationService.notifyError(res.message);
+                }
+            } else if (res.error.messages) {
                 this.notificationService.notifyError(res.error['messages'][0]);
-            } else if (!areNotificationsHidden) {
+            } else {
                 this.notificationService.notifyError(res.message);
             }
         };

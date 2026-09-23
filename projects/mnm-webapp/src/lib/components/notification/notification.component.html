@@ -28,7 +28,7 @@
               <p>{{ modal.message }}</p>
             </section>
             <footer class="mnm-foot">
-              @for (button of modal.buttons; track $index; let i = $index) {
+              @for (button of modal.buttons; track i; let i = $index) {
                 <button
                   class="mnm-button {{ modalPrimaryButtonClasses }}"
                   (click)="submitModal(modal, i)"
@@ -74,7 +74,7 @@
           <!--LIST-->
           @if (modal.type === 'list') {
             <section class="mnm-body">
-              @for (button of modal.buttons; track $index; let idx = $index) {
+              @for (button of modal.buttons; track idx; let idx = $index) {
                 <button
                   style="margin-top: 4px;"
                   class="mnm-button {{ modalPrimaryButtonClasses }}"

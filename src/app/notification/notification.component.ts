@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { WizardComponent, LoadingService, NotificationService } from '../../../projects/mnm-webapp/src/public_api';
+import { WizardComponent, LoadingService, NotificationService, LoadingComponent, NotificationComponent as MnmNotificationComponent, MnmWebappModule } from '../../../projects/mnm-webapp/src/public_api';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, LoadingComponent, MnmNotificationComponent, MnmWebappModule]
 })
 export class NotificationComponent implements OnInit, AfterViewInit {
 

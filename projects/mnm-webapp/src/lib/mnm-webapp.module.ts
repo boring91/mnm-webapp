@@ -3,9 +3,6 @@ import { MNMConfig } from './config/mnm-config';
 import { MNM_CONFIG } from './config/mnm.config';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MNMHttpInterceptor } from './services/http/mnm-http.interceptor';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { NotificationComponent } from './components/notification/notification.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { NotificationService } from './components/notification/notification.service';
@@ -23,10 +20,6 @@ import { LocalStorageAccessorService } from './services/local-storage-accessor.s
 
 @NgModule({
     imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule,
-        // HttpClientModule
         NotificationComponent,
         LoadingComponent,
         MnmMainComponent,

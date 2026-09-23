@@ -7,7 +7,6 @@
     "peerDependencies": {
         "@angular/common": "^22.0.0",
         "@angular/core": "^22.0.0",
-        "@angular/animations": "^22.0.0",
         "@angular/forms": "^22.0.0",
         "@angular/router": "^22.0.0",
         "rxjs": "^6.5.3 || ^7.4.0"

@@ -1,4 +1,15 @@
-import { AnimationMetadata } from '@angular/animations';
+/** A Web Animations API animation: element.animate(keyframes, options). */
+export interface MnmAnimation {
+    keyframes: Keyframe[];
+    options?: KeyframeAnimationOptions;
+}
+
+export interface ModalAnimations {
+    overlayEnterAnimation: MnmAnimation;
+    overlayLeaveAnimation: MnmAnimation;
+    dialogEnterAnimation: MnmAnimation;
+    dialogLeaveAnimation: MnmAnimation;
+}
 
 export interface MNMConfig {
     oauthConfig?: {
@@ -9,14 +20,6 @@ export interface MNMConfig {
         contentType?: string;
     };
     modal?: {
-        animations?: {
-            overlayEnterAnimation?: AnimationMetadata[];
-
-            overlayLeaveAnimation?: AnimationMetadata[];
-
-            dialogEnterAnimation?: AnimationMetadata[];
-
-            dialogLeaveAnimation?: AnimationMetadata[];
-        };
+        animations?: Partial<ModalAnimations>;
     };
 }

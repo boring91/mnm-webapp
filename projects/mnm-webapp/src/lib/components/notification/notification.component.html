@@ -1,7 +1,9 @@
-<div class="mnm-alerts-container" [@listAnimation]="alerts().length">
+<div class="mnm-alerts-container">
   @for (alert of alerts(); track alert.id) {
     <div
       class="is-active mnm-notification {{ alert.className }}"
+      animate.enter="mnm-alert-enter"
+      animate.leave="mnm-alert-leave"
       (mouseenter)="removeAlertTimer(alert)"
       (mouseleave)="setAlertTimer(alert)"
     >
@@ -11,9 +13,9 @@
   }
 </div>
 
-<div [@modalAnimation]="modals().length">
+<div>
   @for (modal of modals(); track modal.id) {
-    <div class="mnm-modal">
+    <div class="mnm-modal" animate.enter="mnm-modal-enter" animate.leave="mnm-modal-leave">
       <div class="mnm-overlay" (click)="dismissModal(modal)"></div>
       <div class="mnm-card">
         <header class="mnm-head">

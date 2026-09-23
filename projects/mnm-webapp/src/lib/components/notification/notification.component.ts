@@ -1,6 +1,5 @@
 import {
     Component,
-    OnDestroy,
     Input,
     DestroyRef,
     inject,
@@ -10,15 +9,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from './notification.service';
 import { NotificationType } from './notification-type';
-import {
-    animate,
-    keyframes,
-    query,
-    stagger,
-    style,
-    transition,
-    trigger,
-} from '@angular/animations';
 import { miscFunctions } from '../../misc/misc-functions';
 import { Alert } from './alert';
 import { Modal } from './modal';
@@ -37,77 +27,8 @@ import { FormsModule } from '@angular/forms';
     standalone: true,
     imports: [FormsModule],
     changeDetection: ChangeDetectionStrategy.Default,
-    animations: [
-        trigger('listAnimation', [
-            transition('* => *', [
-                query(':enter', style({ opacity: 0 }), { optional: true }),
-
-                query(
-                    ':enter',
-                    stagger('200ms', [
-                        animate(
-                            '200ms ease-in',
-                            keyframes([
-                                style({ opacity: 0.0, offset: 0.0 }),
-                                style({ opacity: 0.7, offset: 0.7 }),
-                                style({ opacity: 1.0, offset: 1.0 }),
-                            ])
-                        ),
-                    ]),
-                    { optional: true }
-                ),
-
-                query(
-                    ':leave',
-                    stagger('200ms', [
-                        animate(
-                            '200ms ease-in',
-                            keyframes([
-                                style({ opacity: 1.0, offset: 0.0 }),
-                                style({ opacity: 0.5, offset: 0.3 }),
-                                style({ opacity: 0.0, offset: 1.0 }),
-                            ])
-                        ),
-                    ]),
-                    { optional: true }
-                ),
-            ]),
-        ]),
-        trigger('modalAnimation', [
-            transition('* => *', [
-                query(':enter', style({ opacity: 0 }), { optional: true }),
-                query(
-                    ':enter',
-                    stagger('100ms', [
-                        animate(
-                            '100ms ease-in',
-                            keyframes([
-                                style({ opacity: 0.0, offset: 0.0 }),
-                                style({ opacity: 1.0, offset: 1.0 }),
-                            ])
-                        ),
-                    ]),
-                    { optional: true }
-                ),
-
-                query(
-                    ':leave',
-                    stagger('100ms', [
-                        animate(
-                            '100ms ease-in',
-                            keyframes([
-                                style({ opacity: 1.0, offset: 0.0 }),
-                                style({ opacity: 0.0, offset: 1.0 }),
-                            ])
-                        ),
-                    ]),
-                    { optional: true }
-                ),
-            ]),
-        ]),
-    ],
 })
-export class NotificationComponent implements OnDestroy {
+export class NotificationComponent {
     @Input('modalPrimaryButtonClasses') public modalPrimaryButtonClasses = '';
     @Input('modalSecondaryButtonClasses') public modalSecondaryButtonClasses =
         '';
@@ -192,7 +113,7 @@ export class NotificationComponent implements OnDestroy {
         });
 
         this._callback = (event: KeyboardEvent) => {
-            if (event.keyCode === 27) {
+            if (event.key === 'Escape') {
                 this.modals.update(modals => {
                     const newModals = [...modals];
                     newModals.pop();
@@ -205,10 +126,6 @@ export class NotificationComponent implements OnDestroy {
         this.destroyRef.onDestroy(() => {
             this.document.removeEventListener('keyup', this._callback);
         });
-    }
-
-    ngOnDestroy() {
-        // Cleanup is handled by destroyRef.onDestroy
     }
 
     dismissAlert(alertId: string) {
@@ -230,7 +147,7 @@ export class NotificationComponent implements OnDestroy {
     }
 
     submitPromptIfEnter(modal: Modal, event: KeyboardEvent) {
-        if (event.keyCode === 13) {
+        if (event.key === 'Enter') {
             this.submitPrompt(modal);
         }
     }

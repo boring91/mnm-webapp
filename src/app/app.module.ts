@@ -1,17 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MnmWebappModule } from 'projects/mnm-webapp/src/public_api';
 import { AppService } from './app.service';
 import { AppRoutingModule } from './app.routing';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @NgModule({
     declarations: [],
     imports: [
         BrowserModule,
-        BrowserAnimationsModule,
         MnmWebappModule.forRoot({
             oauthConfig: {
                 claimsUrl: 'http://localhost:5004/claims',
@@ -19,8 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
             },
         }),
         AppRoutingModule,
-        HttpClientModule,
     ],
-    providers: [AppService],
+    providers: [AppService, provideHttpClient(withInterceptorsFromDi())],
 })
 export class AppModule {}

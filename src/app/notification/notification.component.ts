@@ -1,12 +1,11 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { WizardComponent, LoadingService, NotificationService, LoadingComponent, NotificationComponent as MnmNotificationComponent, MnmWebappModule } from '../../../projects/mnm-webapp/src/public_api';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
   standalone: true,
-  imports: [CommonModule, LoadingComponent, MnmNotificationComponent, MnmWebappModule]
+  imports: [LoadingComponent, MnmNotificationComponent, MnmWebappModule]
 })
 export class NotificationComponent implements OnInit, AfterViewInit {
 
@@ -54,6 +53,16 @@ export class NotificationComponent implements OnInit, AfterViewInit {
 
   initiateSuccess() {
     this._notificationService.notifySuccess('Hello there: ' + this.counter++);
+  }
+
+  loading() {
+    this._loadingService.showLoading();
+    setTimeout(() => this._loadingService.hideLoading(), 2000);
+  }
+
+  blocking() {
+    this._loadingService.showBlockingLoading();
+    setTimeout(() => this._loadingService.hideBlockingLoading(), 2000);
   }
 
   giveMeModal() {

@@ -1,48 +1,27 @@
-import { style, animate, group } from '@angular/animations';
+import { ModalAnimations } from './mnm-config';
 
-export const animations = {
-    overlayEnterAnimation: [
-        group([
-            style({ opacity: 0.0 }),
-            animate('150ms', style({ opacity: 1.0 })),
-            // query('@dialog', animateChild()),
-        ]),
-    ],
+const dialogHidden = {
+    transform: 'perspective(1cm) rotateX(6deg) rotateY(0deg) translateY(100%)',
+};
+const dialogShown = {
+    transform: 'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(0)',
+};
 
-    overlayLeaveAnimation: [
-        group([
-            style({ opacity: 1.0 }),
-            animate('150ms', style({ opacity: 0.0 })),
-            // query('@dialog', animateChild()),
-        ]),
-    ],
-
-    dialogEnterAnimation: [
-        style({
-            transform:
-                'perspective(1cm) rotateX(6deg) rotateY(0deg) translateY(100%)',
-        }),
-        animate(
-            // '500ms cubic-bezier(.19,1.33,.69,.97)',
-            '500ms cubic-bezier(.19,1.33,.46,.98)',
-            style({
-                transform:
-                    'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(0)',
-            })
-        ),
-    ],
-
-    dialogLeaveAnimation: [
-        style({
-            transform:
-                'perspective(1cm) rotateX(0deg) rotateY(0deg) translateY(0)',
-        }),
-        animate(
-            '500ms',
-            style({
-                transform:
-                    'perspective(1cm) rotateX(6deg) rotateY(0deg) translateY(100%)',
-            })
-        ),
-    ],
+export const animations: ModalAnimations = {
+    overlayEnterAnimation: {
+        keyframes: [{ opacity: 0 }, { opacity: 1 }],
+        options: { duration: 150 },
+    },
+    overlayLeaveAnimation: {
+        keyframes: [{ opacity: 1 }, { opacity: 0 }],
+        options: { duration: 150 },
+    },
+    dialogEnterAnimation: {
+        keyframes: [dialogHidden, dialogShown],
+        options: { duration: 500, easing: 'cubic-bezier(.19,1.33,.46,.98)' },
+    },
+    dialogLeaveAnimation: {
+        keyframes: [dialogShown, dialogHidden],
+        options: { duration: 500 },
+    },
 };

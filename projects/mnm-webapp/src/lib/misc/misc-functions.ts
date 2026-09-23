@@ -65,8 +65,8 @@ export const miscFunctions = {
 
   offset: function (el: HTMLElement) {
     const rect = el.getBoundingClientRect(),
-      scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      scrollLeft = window.scrollX,
+      scrollTop = window.scrollY;
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
   },
 
@@ -88,7 +88,7 @@ export const miscFunctions = {
     return newObj;
   },
 
-  getScrollTop: () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0,
+  getScrollTop: () => window.scrollY,
 
   validators: {
     email: function (email): boolean {

@@ -10,6 +10,14 @@
 <button (click)="giveMePrompt()">Give Me Prompt</button>
 <button (click)="giveMeList()">Give Me List</button>
 
+<br>
+<button (click)="loading()">Loading 2s</button>
+<button (click)="blocking()">Blocking 2s</button>
+<button (click)="wizard.show()">Wizard</button>
+<mnm-wizard #wizard>
+  <div style="background: white; padding: 20px; width: 200px; margin: auto">Wizard content</div>
+</mnm-wizard>
+
 <div style="
   width: 100px;
   height: 100px;

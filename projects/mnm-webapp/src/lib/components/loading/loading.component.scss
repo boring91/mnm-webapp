@@ -10,12 +10,6 @@
   top: 0;
   left: 0;
   z-index: 10000;
-  opacity: 0.0;
-  transition: all 0.2s ease-in-out;
-
-  &.is-active {
-    opacity: 1.0;
-  }
 
   .mnm-indeterminate:before {
     content: '';
@@ -132,3 +126,24 @@
 
 
 
+
+.mnm-progress-enter {
+  animation: mnm-fade-in 150ms;
+}
+.mnm-progress-leave {
+  animation: mnm-fade-out 150ms forwards;
+}
+.mnm-overlay-enter {
+  animation: mnm-fade-in 500ms ease-in-out;
+}
+.mnm-overlay-leave {
+  animation: mnm-fade-out 500ms ease-in-out forwards;
+}
+@keyframes mnm-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes mnm-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

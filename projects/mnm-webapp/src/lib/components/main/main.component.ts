@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LoadingComponent } from '../loading/loading.component';
 import { ModalComponent } from '../../services/modal/components/modal/modal.component';
 
@@ -10,5 +10,6 @@ import { ModalComponent } from '../../services/modal/components/modal/modal.comp
     `,
     standalone: true,
     imports: [LoadingComponent, ModalComponent],
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MnmMainComponent {}

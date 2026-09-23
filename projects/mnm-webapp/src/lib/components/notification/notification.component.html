@@ -17,77 +17,73 @@
       <div class="mnm-overlay" (click)="dismissModal(modal)"></div>
       <div class="mnm-card">
         <header class="mnm-head">
-          <p class="mnm-title">{{ modal.title }}</p>
-          <button (click)="dismissModal(modal)" class="mnm-remove"></button>
+        <p class="mnm-title">{{ modal.title }}</p>
+        <button (click)="dismissModal(modal)" class="mnm-remove"></button>
         </header>
 
-        @defer {
-          <!--MODAL-->
-          @if (modal.type === 'modal') {
-            <section class="mnm-body">
-              <p>{{ modal.message }}</p>
-            </section>
-            <footer class="mnm-foot">
-              @for (button of modal.buttons; track i; let i = $index) {
-                <button
-                  class="mnm-button {{ modalPrimaryButtonClasses }}"
-                  (click)="submitModal(modal, i)"
-                >
-                  {{ button }}
-                </button>
-              }
-            </footer>
-          }
-
-          <!--PROMPT-->
-          @if (modal.type === 'prompt') {
-            <section class="mnm-body">
-              <div class="mnm-field">
-                <label class="mnm-label">{{ modal.message }}</label>
-                <p class="mnm-control">
-                  <textarea
-                    (keyup)="submitPromptIfEnter(modal, $event)"
-                    class="mnm-input"
-                    type="text"
-                    placeholder="{{ modal.promptPlaceholder }}"
-                    [(ngModel)]="modal.promptText"
-                  ></textarea>
-                </p>
-              </div>
-            </section>
-            <footer class="mnm-foot">
+        <!--MODAL-->
+        @if (modal.type === 'modal') {
+          <section class="mnm-body">
+            <p>{{ modal.message }}</p>
+          </section>
+          <footer class="mnm-foot">
+            @for (button of modal.buttons; track i; let i = $index) {
               <button
-                (click)="submitPrompt(modal)"
-                class="mnm-button {{ modalPrimaryButtonClasses }} is-success"
+                class="mnm-button {{ modalPrimaryButtonClasses }}"
+                (click)="submitModal(modal, i)"
               >
-                {{ modal.buttons[0] }}
+                {{ button }}
               </button>
-              <button
-                (click)="dismissModal(modal)"
-                class="mnm-button {{ modalSecondaryButtonClasses }}"
-              >
-                {{ modal.buttons[1] }}
-              </button>
-            </footer>
-          }
+            }
+          </footer>
+        }
 
-          <!--LIST-->
-          @if (modal.type === 'list') {
-            <section class="mnm-body">
-              @for (button of modal.buttons; track idx; let idx = $index) {
-                <button
-                  style="margin-top: 4px;"
-                  class="mnm-button {{ modalPrimaryButtonClasses }}"
-                  (click)="submitModal(modal, idx)"
-                >
-                  {{ button }}
-                </button>
-              }
-            </section>
-            <footer class="mnm-foot"></footer>
-          }
-        } @loading {
-          <div class="mnm-loading">Loading modal content...</div>
+        <!--PROMPT-->
+        @if (modal.type === 'prompt') {
+          <section class="mnm-body">
+            <div class="mnm-field">
+              <label class="mnm-label">{{ modal.message }}</label>
+              <p class="mnm-control">
+                <textarea
+                  (keyup)="submitPromptIfEnter(modal, $event)"
+                  class="mnm-input"
+                  type="text"
+                  placeholder="{{ modal.promptPlaceholder }}"
+                  [(ngModel)]="modal.promptText"
+                ></textarea>
+              </p>
+            </div>
+          </section>
+          <footer class="mnm-foot">
+            <button
+              (click)="submitPrompt(modal)"
+              class="mnm-button {{ modalPrimaryButtonClasses }} is-success"
+            >
+              {{ modal.buttons[0] }}
+            </button>
+            <button
+              (click)="dismissModal(modal)"
+              class="mnm-button {{ modalSecondaryButtonClasses }}"
+            >
+              {{ modal.buttons[1] }}
+            </button>
+          </footer>
+        }
+
+        <!--LIST-->
+        @if (modal.type === 'list') {
+          <section class="mnm-body">
+            @for (button of modal.buttons; track idx; let idx = $index) {
+              <button
+                style="margin-top: 4px;"
+                class="mnm-button {{ modalPrimaryButtonClasses }}"
+                (click)="submitModal(modal, idx)"
+              >
+                {{ button }}
+              </button>
+            }
+          </section>
+          <footer class="mnm-foot"></footer>
         }
       </div>
     </div>

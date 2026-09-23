@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./loading.component.scss'],
     standalone: true,
     imports: [CommonModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.Default,
     animations: [
         trigger('spinner', [
             transition('* => *', [

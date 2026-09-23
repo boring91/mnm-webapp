@@ -1,10 +1,11 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { animate, keyframes, query, stagger, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'mnm-wizard',
   templateUrl: './wizard.component.html',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Default,
   styleUrls: ['./wizard.component.scss'],
   animations: [
     trigger('wizardAnimation', [

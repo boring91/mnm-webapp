@@ -105,7 +105,7 @@ export class MNMHttpInterceptor implements HttpInterceptor {
             }
             if (!res.error) {
                 this.notificationService.notifyError(res.message);
-            } else if (req.responseType === 'blob') {
+            } else if (res.error instanceof Blob) {
                 // Blob requests receive the error body as a Blob; read it
                 // to surface the backend's message instead of the status text.
                 const errorText = await res.error.text();

@@ -5,6 +5,7 @@ import {
     DestroyRef,
     inject,
     signal,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from './notification.service';
@@ -35,6 +36,7 @@ import { FormsModule } from '@angular/forms';
     styleUrls: ['./notification.component.scss'],
     standalone: true,
     imports: [FormsModule],
+    changeDetection: ChangeDetectionStrategy.Default,
     animations: [
         trigger('listAnimation', [
             transition('* => *', [

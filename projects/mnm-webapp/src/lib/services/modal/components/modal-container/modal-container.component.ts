@@ -34,7 +34,7 @@ interface ElementPlayers {
     styleUrls: ['./modal-container.component.scss'],
     standalone: true,
     imports: [],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ModalContainerComponent implements AfterViewInit, OnDestroy {
     @Output() public modalDismiss = new EventEmitter<(c: any) => void>();

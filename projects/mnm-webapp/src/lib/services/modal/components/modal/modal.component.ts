@@ -1,4 +1,5 @@
 import {
+    ChangeDetectionStrategy,
     Component,
     OnDestroy,
     Type,
@@ -16,6 +17,7 @@ import { ModalOptions } from '../../models/modal-options';
     selector: 'mnm-modal',
     template: `<div #container></div>`,
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ModalComponent implements OnDestroy {
     @ViewChild('container', { read: ViewContainerRef })
